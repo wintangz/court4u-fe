@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div className='mt-0'>
+    <div className=''>
       <Image
         src='http://m.gettywallpapers.com/wp-content/uploads/2022/03/Badminton-Laptop-Wallpaper.jpeg'
         alt=''

@@ -13,7 +13,7 @@ export default async function RootLayout({
     <html data-theme='court4u' lang='en'>
       <body>
         <NavBar />
-        {children}
+        <div className='min-h-screen'>{children}</div>
         <Footer />
       </body>
     </html>
