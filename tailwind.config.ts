@@ -46,7 +46,7 @@ const config: Config = {
         court4u: {
           primary: '#f0f0f0',
           secondary: '#ffffff',
-          neutral: '#e5e7eb',
+          neutral: '#222',
           'base-100': '#ffffff',
           info: '#38bdf8',
           success: '#4ade80',
