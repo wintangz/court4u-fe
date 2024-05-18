@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'upload.wikimedia.org',
       },
+      {
+        protocol: 'http',
+        hostname: 'm.gettywallpapers.com',
+      },
     ],
   },
 };
