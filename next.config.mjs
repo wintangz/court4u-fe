@@ -7,6 +7,10 @@ const nextConfig = {
         hostname: 'upload.wikimedia.org',
       },
       {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
         protocol: 'http',
         hostname: 'm.gettywallpapers.com',
       },
