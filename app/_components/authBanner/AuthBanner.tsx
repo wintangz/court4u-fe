@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const AuthBanner = () => {
   return (
-    <div className='w-[50vw] min-h-[100vh] bg-[#16ad2a] pt-[5%] relative'>
+    <div className='w-[50vw] min-h-[100vh] bg-gradient-to-l from-[#6bc945] to-[#22ad5c] pt-[5%] relative'>
       <div>
         <div className='title'>
           <Link href='/' className='flex items-center justify-center gap-3'>

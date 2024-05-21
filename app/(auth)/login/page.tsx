@@ -4,7 +4,7 @@ import React from 'react';
 const Login = () => {
   return (
     <div>
-      <div className='w-[50vw] min-h-[100vh]  bg-[#129523] py-16 px-4  text-center '>
+      <div className='w-[50vw] min-h-[100vh]  bg-secondary py-16 px-4  text-center '>
         <div className='welcome-back'>
           <div className='title text-[40px] font-bold '>
             <p className='text-[#E2E1E1]'>Welcome back!</p>
