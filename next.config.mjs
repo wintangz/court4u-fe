@@ -14,6 +14,10 @@ const nextConfig = {
         protocol: 'http',
         hostname: 'm.gettywallpapers.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'i.pinimg.com',
+      },
     ],
   },
 };

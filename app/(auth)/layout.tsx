@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import AuthBanner from '../_components/authBanner/AuthBanner';
 import '../globals.css';
 
