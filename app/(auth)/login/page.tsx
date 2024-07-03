@@ -1,5 +1,6 @@
 'use client';
 import { login } from '@/app/_services/userService';
+import { jwtDecode } from 'jwt-decode';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -16,11 +17,17 @@ const Login = () => {
     password: '',
   });
 
-  const handleLogin = () => {
-    login({
+  const handleLogin = async () => {
+    const res = await login({
       email: userInfo.email,
       password: userInfo.password,
     });
+
+    if (res.status == 200) {
+      // save token to local storage
+      const accessToken = res.data.metaData.tokens.accessToken;
+      console.log(jwtDecode(accessToken));
+    }
   };
 
   return (
