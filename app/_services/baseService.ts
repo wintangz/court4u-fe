@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseUrl = 'http://localhost:8080/v1/api';
+export const baseUrl = 'http://localhost:8080/api';
 
 export const axiosGet = (path: string, config: any) =>
   axios.get(baseUrl + path, config);

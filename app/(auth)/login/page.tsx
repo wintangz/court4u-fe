@@ -1,10 +1,13 @@
 'use client';
-import { login } from '@/app/_services/userService';
+import { baseUrl } from '@/app/_services/baseService';
+import { login, loginFacebook, loginGoogle } from '@/app/_services/userService';
 import { jwtDecode } from 'jwt-decode';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { IoIosArrowBack } from 'react-icons/io';
+import { toast, ToastContainer } from 'react-toastify';
 
 type UserInfo = {
   email: string;
@@ -12,26 +15,53 @@ type UserInfo = {
 };
 
 const Login = () => {
+  const router = useRouter();
+
   const [userInfo, setUserInfo] = useState<UserInfo>({
     email: '',
     password: '',
   });
 
   const handleLogin = async () => {
-    const res = await login({
-      email: userInfo.email,
-      password: userInfo.password,
-    });
+    try {
+      const res = await login({
+        email: userInfo.email,
+        password: userInfo.password,
+      });
 
-    if (res.status == 200) {
-      // save token to local storage
-      const accessToken = res.data.metaData.tokens.accessToken;
-      console.log(jwtDecode(accessToken));
+      if (res.status == 200) {
+        // save token to local storage
+        const accessToken = res.data.metaData.tokens.accessToken;
+        console.log(jwtDecode(accessToken));
+      }
+    } catch (error) {
+      if (!toast.isActive('loginError')) {
+        toast.error('🦄 Incorrect email or password!', {
+          toastId: 'loginError',
+          position: 'bottom-right',
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: 'light',
+        });
+      }
     }
+  };
+
+  const handleFacebook = async () => {
+    router.replace(baseUrl + '/auth/facebook');
+  };
+
+  const handleGoogle = async () => {
+    router.replace(baseUrl + '/auth/google');
   };
 
   return (
     <div className=''>
+      <ToastContainer />
       <div className='flex flex-col relative w-[50vw] min-h-[100vh] bg-secondary py-16 px-4 text-center '>
         <Link href='/' className='absolute left-0 top-0 p-4'>
           <IoIosArrowBack className='size-8' />
@@ -99,18 +129,24 @@ const Login = () => {
         </div>
 
         <div className='flex justify-between mt-[30px] mb-9 mx-36'>
-          <div className='text-[14px] gap-[15px] border border-black w-[45%] rounded-[23px] text-neutral flex p-2 justify-center items-center font-semibold hover:bg-[#c6c6c6a1] hover:text-black hover:cursor-pointer'>
+          <a
+            onClick={() => handleGoogle()}
+            className='text-[14px] gap-[15px] border border-black w-[45%] rounded-[23px] text-neutral flex p-2 justify-center items-center font-semibold hover:bg-[#c6c6c6a1] hover:text-black hover:cursor-pointer'
+          >
             <img className='icon w-4' alt='Google' src='../assets/google.png' />
             Login with Google
-          </div>
-          <div className='text-[14px] gap-[15px] border border-black w-[45%]  rounded-[23px] text-neutral flex p-2 justify-center items-center font-semibold hover:bg-[#c6c6c6a1] hover:text-black  hover:cursor-pointer'>
+          </a>
+          <a
+            onClick={() => handleFacebook()}
+            className='text-[14px] gap-[15px] border border-black w-[45%]  rounded-[23px] text-neutral flex p-2 justify-center items-center font-semibold hover:bg-[#c6c6c6a1] hover:text-black  hover:cursor-pointer'
+          >
             <img
               className='icon w-4'
               alt='Google'
               src='../assets/facebook.png'
             />
             Login with Facebook
-          </div>
+          </a>
         </div>
 
         <div className='sign_up inline-flex justify-center items-center'>
