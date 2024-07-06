@@ -4,6 +4,7 @@ import { register } from '@/app/_services/userService';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { IoIosArrowBack } from 'react-icons/io';
+import { toast, ToastContainer } from 'react-toastify';
 
 type UserInfo = {
   fullName: string;
@@ -22,21 +23,62 @@ const Register = () => {
     confirmPassword: '',
   });
 
-  const handleRegister = () => {
-    if (userInfo.password === userInfo.confirmPassword) {
-      register({
-        fullname: userInfo.fullName,
-        email: userInfo.email,
-        phone: userInfo.phone,
-        password: userInfo.password,
-      });
-    } else {
-      console.log('Password not matched');
+  const handleRegister = async () => {
+    try {
+      if (userInfo.password === userInfo.confirmPassword) {
+        const result = await register({
+          fullname: userInfo.fullName,
+          email: userInfo.email,
+          phone: userInfo.phone,
+          password: userInfo.password,
+        });
+
+        if (result.status === 200) {
+          toast.success('Success! Please check your email.', {
+            position: 'bottom-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+            theme: 'light',
+          });
+          // Clear form
+          setUserInfo({
+            fullName: '',
+            email: '',
+            phone: '',
+            password: '',
+            confirmPassword: '',
+          });
+        }
+      } else {
+        console.log('Password not matched');
+      }
+    } catch (error) {
+      console.error(error);
+      if (!toast.isActive('registerError')) {
+        toast.error('🦄 Error while registering!', {
+          toastId: 'registerError',
+          position: 'bottom-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: 'light',
+        });
+      }
     }
   };
 
+  useEffect(() => {}, [userInfo]);
+
   return (
     <div className=''>
+      <ToastContainer />
       <div className='flex flex-col relative w-[50vw] min-h-[100vh] bg-secondary py-16 px-4 text-center '>
         <Link href='/' className='absolute left-0 top-0 p-4'>
           <IoIosArrowBack className='size-8' />
@@ -59,10 +101,10 @@ const Register = () => {
               type='text'
               placeholder='Enter your full name'
               className='input input-bordered input-ghost w-full max-w-sm'
-              onChange={(e) => {
-                userInfo.fullName = e.target.value;
-                setUserInfo(userInfo);
-              }}
+              value={userInfo.fullName}
+              onChange={(e) =>
+                setUserInfo({ ...userInfo, fullName: e.target.value })
+              }
             />
           </label>
           <label className='form-control w-full max-w-sm'>
@@ -73,10 +115,10 @@ const Register = () => {
               type='text'
               placeholder='Enter your email address'
               className='input input-bordered input-ghost w-full max-w-sm'
-              onChange={(e) => {
-                userInfo.email = e.target.value;
-                setUserInfo(userInfo);
-              }}
+              value={userInfo.email}
+              onChange={(e) =>
+                setUserInfo({ ...userInfo, email: e.target.value })
+              }
             />
           </label>
           <label className='form-control w-full max-w-sm'>
@@ -87,10 +129,10 @@ const Register = () => {
               type='text'
               placeholder='Enter your phone number'
               className='input input-bordered input-ghost w-full max-w-sm'
-              onChange={(e) => {
-                userInfo.phone = e.target.value;
-                setUserInfo(userInfo);
-              }}
+              value={userInfo.phone}
+              onChange={(e) =>
+                setUserInfo({ ...userInfo, phone: e.target.value })
+              }
             />
           </label>
           <label className='form-control w-full max-w-sm'>
@@ -101,10 +143,10 @@ const Register = () => {
               type='password'
               placeholder='Enter your password'
               className='input input-bordered input-ghost w-full max-w-sm'
-              onChange={(e) => {
-                userInfo.password = e.target.value;
-                setUserInfo(userInfo);
-              }}
+              value={userInfo.password}
+              onChange={(e) =>
+                setUserInfo({ ...userInfo, password: e.target.value })
+              }
             />
           </label>
           <label className='form-control w-full max-w-sm'>
@@ -115,16 +157,16 @@ const Register = () => {
               type='password'
               placeholder='Confirm your password'
               className='input input-bordered input-ghost w-full max-w-sm'
-              onChange={(e) => {
-                userInfo.confirmPassword = e.target.value;
-                setUserInfo(userInfo);
-              }}
+              value={userInfo.confirmPassword}
+              onChange={(e) =>
+                setUserInfo({ ...userInfo, confirmPassword: e.target.value })
+              }
             />
           </label>
         </div>
         <div className='flex flex-col items-center'>
           <button
-            onClick={() => handleRegister()}
+            onClick={handleRegister}
             className='w-[54%] my-8 rounded-lg btn hover:shadow-[0_1px_0px_rgb(0,0,0)] text-[#ffffff] text-md bg-[#4f7d6f] ease-out hover:translate-y-1 transition-all hover:bg-[#2d4242]'
           >
             Register

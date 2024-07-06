@@ -24,9 +24,9 @@ const ClubCard: React.FC<ClubCardProps> = ({
         <h2 className='card-title'>{clubName}</h2>
         <p>{clubDescription}</p>
         <div className='card-actions justify-end'>
-          <button className='btn btn-info'>
-            <Link href={`/clubs/${clubId}`}>Book</Link>
-          </button>
+          <Link href={`/clubs/${clubId}`} className='btn btn-info'>
+            Book
+          </Link>
         </div>
       </div>
     </div>

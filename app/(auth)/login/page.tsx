@@ -33,6 +33,9 @@ const Login = () => {
         // save token to local storage
         const accessToken = res.data.metaData.tokens.accessToken;
         console.log(jwtDecode(accessToken));
+
+        // redirect to dashboard
+        router.push('/');
       }
     } catch (error) {
       if (!toast.isActive('loginError')) {
