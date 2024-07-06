@@ -32,7 +32,10 @@ const Login = () => {
       if (res.status == 200) {
         // save token to local storage
         const accessToken = res.data.metaData.tokens.accessToken;
+        const refreshToken = res.data.metaData.tokens.refreshToken;
         console.log(jwtDecode(accessToken));
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
 
         // redirect to dashboard
         router.push('/');
