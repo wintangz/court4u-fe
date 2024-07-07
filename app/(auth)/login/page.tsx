@@ -1,11 +1,10 @@
 'use client';
 import { baseUrl } from '@/app/_services/baseService';
-import { login, loginFacebook, loginGoogle } from '@/app/_services/userService';
+import { login } from '@/app/_services/userService';
 import { jwtDecode } from 'jwt-decode';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IoIosArrowBack } from 'react-icons/io';
 import { toast, ToastContainer } from 'react-toastify';
 
@@ -21,7 +20,14 @@ const Login = () => {
     email: '',
     password: '',
   });
+  const [role, setRole] = useState('');
 
+  useEffect(() => {
+    const userRole = localStorage.getItem('roles');
+    if (userRole) {
+      setRole(userRole);
+    }
+  }, []);
   const handleLogin = async () => {
     try {
       const res = await login({
@@ -38,7 +44,11 @@ const Login = () => {
         localStorage.setItem('refreshToken', refreshToken);
 
         // redirect to dashboard
-        router.push('/');
+        if (role === 'ADMIN') {
+          router.push('/admin');
+        } else if (role === 'OWNER') {
+          router.push('/owner/clubs');
+        }
       }
     } catch (error) {
       if (!toast.isActive('loginError')) {
