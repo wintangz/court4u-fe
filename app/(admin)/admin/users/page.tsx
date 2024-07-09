@@ -1,5 +1,6 @@
 'use client';
 import { getUsers } from '@/app/_services/userService';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 const Users = () => {
@@ -75,7 +76,12 @@ const Users = () => {
                     </div>
                   </td>
                   <th>
-                    <button className='btn btn-ghost btn-xs'>update</button>
+                    <Link
+                      href={'/admin/users/' + user.id}
+                      className='btn btn-ghost btn-xs'
+                    >
+                      update
+                    </Link>
                     <button className='btn btn-ghost btn-xs'>delete</button>
                   </th>
                 </tr>

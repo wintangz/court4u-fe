@@ -52,7 +52,7 @@ const Login = () => {
       }
     } catch (error) {
       if (!toast.isActive('loginError')) {
-        toast.error('🦄 Incorrect email or password!', {
+        toast.error('Incorrect email or password!', {
           toastId: 'loginError',
           position: 'bottom-right',
           autoClose: 2500,
