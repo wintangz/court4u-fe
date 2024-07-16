@@ -1,8 +1,7 @@
 'use client';
 import ClubCard from '@/app/_components/club/ClubCard';
-import ClubComponents from './ClubComponents';
-import { useEffect, useState } from 'react';
 import { getClubs } from '@/app/_services/clubService';
+import { useEffect, useState } from 'react';
 
 const Clubs = () => {
   const [clubs, setClubs] = useState<any>(null);
