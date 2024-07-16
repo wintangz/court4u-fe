@@ -82,7 +82,9 @@ const Users = () => {
                     >
                       update
                     </Link>
-                    <button className='btn btn-ghost btn-xs'>delete</button>
+                    <button className='btn btn-ghost btn-xs hover:bg-red-400'>
+                      delete
+                    </button>
                   </th>
                 </tr>
               ))}

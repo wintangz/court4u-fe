@@ -4,22 +4,27 @@ import React, { useEffect, useState } from 'react';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { bookSlots } from '@/app/_services/bookService';
 import { useRouter } from 'next/navigation';
+import { getClubRemainingCourt } from '@/app/_services/clubService';
 
 dayjs.extend(weekOfYear);
 
-const timeSlots = [
-  { date: '11-11-2003', slot: ['8am', '9am', '10am'] },
-  { date: '12-11-2003', slot: ['8am', '9am'] },
-  { date: '13-11-2003', slot: ['8am', '9am'] },
-];
-
-const Calendar: React.FC<{ slots: any }> = ({ slots }) => {
+const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
   const router = useRouter();
 
   const [selectedWeek, setSelectedWeek] = useState(dayjs().startOf('week'));
   const [currentWeekDays, setCurrentWeekDays] = useState<any>();
+  const [remainingSlots, setRemainingSlots] = useState<any>([]);
 
-  const [selectedSlots, setSelectedSlots] = useState<any>();
+  const [selectedSlots, setSelectedSlots] = useState<{ slotList: any[] }>({
+    slotList: [],
+  });
+
+  useEffect(() => {
+    const data = getClubRemainingCourt(clubId, selectedWeek);
+    data.then((res: any) => {
+      setRemainingSlots(res.data.metaData);
+    });
+  }, [selectedWeek, clubId]);
 
   useEffect(() => {
     const currentWeekDays: Dayjs[] = [];
@@ -44,16 +49,41 @@ const Calendar: React.FC<{ slots: any }> = ({ slots }) => {
         acc[dateOfWeek] = { dateOfWeek, slots: [] };
       }
       acc[dateOfWeek].slots.push({ id, startTime, endTime, price });
+
+      // Sort the slots by sliced startTime after pushing the new slot
+      acc[dateOfWeek].slots.sort((a: any, b: any) => {
+        const timeA = a.startTime.slice(11, 16);
+        const timeB = b.startTime.slice(11, 16);
+        return timeA.localeCompare(timeB);
+      });
+
       return acc;
     }, {})
   );
 
   const handleSelectSlot = (slotId: any) => {
-    const localSelectedSlots = selectedSlots ?? { slotList: [] };
-    localSelectedSlots.slotList.push({ slotId, date: dayjs().toISOString() });
-    console.log(localSelectedSlots);
+    setSelectedSlots((prevSelectedSlots) => {
+      const isSelected = prevSelectedSlots.slotList.some(
+        (selectedSlot) => selectedSlot.slotId === slotId
+      );
 
-    setSelectedSlots(localSelectedSlots);
+      if (isSelected) {
+        // Remove the slot if it's already selected
+        return {
+          slotList: prevSelectedSlots.slotList.filter(
+            (selectedSlot) => selectedSlot.slotId !== slotId
+          ),
+        };
+      } else {
+        // Add the slot if it's not already selected
+        return {
+          slotList: [
+            ...prevSelectedSlots.slotList,
+            { slotId, date: dayjs().toISOString() },
+          ],
+        };
+      }
+    });
   };
 
   const handleBookSlots = () => {
@@ -65,7 +95,22 @@ const Calendar: React.FC<{ slots: any }> = ({ slots }) => {
     });
   };
 
-  console.log(transformedSlots);
+  //TODO:
+
+  const getSlotClassNames = (slot: any) => {
+    const isSelected = selectedSlots?.slotList?.some(
+      (selectedSlot: any) => selectedSlot.slotId === slot.id
+    );
+
+    const isAvailable = remainingSlots?.some((remainingSlot: any) => {
+      console.log(remainingSlot.id);
+      return remainingSlot.id === slot.id && remainingSlot.courtRemain > 0;
+    });
+
+    return `flex-1 h-16 border border-gray-300 hover:bg-gray-300 hover:cursor-pointer ${
+      isSelected ? 'bg-slate-400' : ''
+    } ${isAvailable ? '' : 'bg-red-400'}`;
+  };
 
   return (
     <div className='p-4'>
@@ -115,15 +160,16 @@ const Calendar: React.FC<{ slots: any }> = ({ slots }) => {
                   )
                   .map((slot: any, index: number) => (
                     <div key={index}>
-                      {slot.slots.map((slot: any, index: number) => (
-                        <div
-                          key={index}
-                          className='flex-1 h-16 border border-gray-300 hover:bg-gray-300 hover:cursor-pointer'
-                          onClick={() => handleSelectSlot(slot.id)}
-                        >
-                          {slot.startTime.slice(11, 16)}
-                        </div>
-                      ))}
+                      {remainingSlots &&
+                        slot.slots.map((slot: any, index: number) => (
+                          <div
+                            key={index}
+                            className={getSlotClassNames(slot)}
+                            onClick={() => handleSelectSlot(slot.id)}
+                          >
+                            {slot.startTime.slice(11, 16)}
+                          </div>
+                        ))}
                     </div>
                   ))}
               </div>

@@ -27,7 +27,7 @@ const Club = () => {
         <div>
           <div className='mt-20 p-5 font-semibold text-2xl'>{club.name}</div>
           <div className='p-5'>
-            <Calendar slots={slots} />
+            <Calendar clubId={id} slots={slots} />
           </div>
         </div>
       )}
