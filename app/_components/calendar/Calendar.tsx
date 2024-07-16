@@ -2,6 +2,8 @@
 import dayjs, { Dayjs } from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
+import { bookSlots } from '@/app/_services/bookService';
+import { useRouter } from 'next/navigation';
 
 dayjs.extend(weekOfYear);
 
@@ -12,8 +14,12 @@ const timeSlots = [
 ];
 
 const Calendar: React.FC<{ slots: any }> = ({ slots }) => {
+  const router = useRouter();
+
   const [selectedWeek, setSelectedWeek] = useState(dayjs().startOf('week'));
   const [currentWeekDays, setCurrentWeekDays] = useState<any>();
+
+  const [selectedSlots, setSelectedSlots] = useState<any>();
 
   useEffect(() => {
     const currentWeekDays: Dayjs[] = [];
@@ -41,6 +47,23 @@ const Calendar: React.FC<{ slots: any }> = ({ slots }) => {
       return acc;
     }, {})
   );
+
+  const handleSelectSlot = (slotId: any) => {
+    const localSelectedSlots = selectedSlots ?? { slotList: [] };
+    localSelectedSlots.slotList.push({ slotId, date: dayjs().toISOString() });
+    console.log(localSelectedSlots);
+
+    setSelectedSlots(localSelectedSlots);
+  };
+
+  const handleBookSlots = () => {
+    const result = bookSlots(selectedSlots);
+
+    result.then((result: any) => {
+      const payUrl = result.data.metaData.payUrl;
+      window.location.href = payUrl;
+    });
+  };
 
   console.log(transformedSlots);
 
@@ -95,7 +118,8 @@ const Calendar: React.FC<{ slots: any }> = ({ slots }) => {
                       {slot.slots.map((slot: any, index: number) => (
                         <div
                           key={index}
-                          className='flex-1 h-16 border border-gray-300 hover:bg-blue-400'
+                          className='flex-1 h-16 border border-gray-300 hover:bg-gray-300 hover:cursor-pointer'
+                          onClick={() => handleSelectSlot(slot.id)}
                         >
                           {slot.startTime.slice(11, 16)}
                         </div>
@@ -128,6 +152,14 @@ const Calendar: React.FC<{ slots: any }> = ({ slots }) => {
           <div className='w-4 h-4 bg-yellow-400'></div>
           <span className='ml-2'>Unpaid bookings</span>
         </div>
+      </div>
+      <div>
+        <button
+          onClick={handleBookSlots}
+          className='py-2 px-4 bg-blue-500 text-white rounded'
+        >
+          Book slots
+        </button>
       </div>
     </div>
   );

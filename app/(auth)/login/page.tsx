@@ -20,14 +20,7 @@ const Login = () => {
     email: '',
     password: '',
   });
-  const [role, setRole] = useState('');
 
-  useEffect(() => {
-    const userRole = localStorage.getItem('roles');
-    if (userRole) {
-      setRole(userRole);
-    }
-  }, []);
   const handleLogin = async () => {
     try {
       const res = await login({
@@ -43,10 +36,15 @@ const Login = () => {
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
 
+        const decodedToken = jwtDecode(
+          res.data.metaData.tokens.accessToken
+        ) as any;
+        const role = decodedToken.roles[0];
+
         // redirect to dashboard
-        if (role === 'ADMIN') {
+        if (role.toUpperCase() === 'ADMIN') {
           router.push('/admin');
-        } else if (role === 'OWNER') {
+        } else if (role.toUpperCase() === 'OWNER') {
           router.push('/owner/clubs');
         }
       }

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const baseUrl = 'http://localhost:8080/api';
+export const baseUrl = 'https://court4u-application.ts.r.appspot.com/api';
 
 export const axiosGet = (path: string, config: any) =>
   axios.get(baseUrl + path, config);

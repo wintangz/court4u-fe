@@ -10,6 +10,7 @@ const links: any = [
   { title: 'Dashboard', path: '/admin' },
   { title: 'Users', path: '/admin/users' },
   { title: 'Clubs', path: '/admin/clubs' },
+  { title: 'Subscriptions', path: '/admin/subscriptions' },
 ];
 
 function getTitle(pathname: string) {
