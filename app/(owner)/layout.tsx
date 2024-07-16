@@ -5,6 +5,13 @@ import SideBar from '../_components/sidebar/SideBar';
 import TopBar from '../_components/sidebar/TopBar';
 import '../globals.css';
 
+const links: any = [
+  { title: 'Dashboard', path: '/admin' },
+  { title: 'Users', path: '/admin/users' },
+  { title: 'Clubs', path: '/admin/clubs' },
+  { title: 'Subscriptions', path: '/admin/subscriptions' },
+];
+
 export default function OwnerLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
@@ -16,7 +23,7 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
   return (
     <html data-theme='court4u' lang='en'>
       <body className='flex bg-primary'>
-        <SideBar />
+        <SideBar links={links} />
         <div className='flex flex-col w-[75vw]'>
           <div className='z-10'>
             <TopBar title={getTitle(pathname)} />

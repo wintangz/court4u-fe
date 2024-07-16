@@ -1,6 +1,10 @@
 import { axiosGet, axiosPost } from './baseService';
 
-const token = localStorage.getItem('accessToken');
+var token: string | null = '';
+
+if (typeof window !== 'undefined') {
+  token = localStorage?.getItem('accessToken');
+}
 
 export const register = (data: any) => axiosPost('/auth/signup', data, '');
 
