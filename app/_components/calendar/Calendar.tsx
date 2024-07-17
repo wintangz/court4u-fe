@@ -5,6 +5,7 @@ import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { bookSlots } from '@/app/_services/bookService';
 import { useRouter } from 'next/navigation';
 import { getClubRemainingCourt } from '@/app/_services/clubService';
+import { checkRole } from '@/app/_services/authService';
 
 dayjs.extend(weekOfYear);
 
@@ -24,7 +25,7 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
     data.then((res: any) => {
       setRemainingSlots(res.data.metaData);
     });
-  }, [selectedWeek, clubId]);
+  }, [selectedWeek]);
 
   useEffect(() => {
     const currentWeekDays: Dayjs[] = [];
@@ -32,7 +33,7 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
       currentWeekDays.push(selectedWeek.add(i, 'day'));
     }
     setCurrentWeekDays(currentWeekDays);
-  }, [selectedWeek]);
+  }, [selectedWeek, remainingSlots]);
 
   const handlePrevDay = () => {
     setSelectedWeek(selectedWeek.subtract(7, 'day'));
@@ -48,7 +49,7 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
       if (!acc[dateOfWeek]) {
         acc[dateOfWeek] = { dateOfWeek, slots: [] };
       }
-      acc[dateOfWeek].slots.push({ id, startTime, endTime, price });
+      acc[dateOfWeek].slots.push({ id, startTime, endTime, price, dateOfWeek });
 
       // Sort the slots by sliced startTime after pushing the new slot
       acc[dateOfWeek].slots.sort((a: any, b: any) => {
@@ -62,6 +63,16 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
   );
 
   const handleSelectSlot = (slotId: any) => {
+    // Check if the slot is available
+    const isAvailable = remainingSlots?.some((remainingSlot: any) => {
+      return remainingSlot.id === slotId && remainingSlot.courtRemain > 0;
+    });
+
+    if (!isAvailable) {
+      // If not available, return early and do not select
+      return;
+    }
+
     setSelectedSlots((prevSelectedSlots) => {
       const isSelected = prevSelectedSlots.slotList.some(
         (selectedSlot) => selectedSlot.slotId === slotId
@@ -87,15 +98,17 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
   };
 
   const handleBookSlots = () => {
-    const result = bookSlots(selectedSlots);
+    if (checkRole('member')) {
+      const result = bookSlots(selectedSlots);
 
-    result.then((result: any) => {
-      const payUrl = result.data.metaData.payUrl;
-      window.location.href = payUrl;
-    });
+      result.then((result: any) => {
+        const payUrl = result.data.metaData.payUrl;
+        window.location.href = payUrl;
+      });
+    } else {
+      router.push('/login');
+    }
   };
-
-  //TODO:
 
   const getSlotClassNames = (slot: any) => {
     const isSelected = selectedSlots?.slotList?.some(
@@ -103,109 +116,171 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
     );
 
     const isAvailable = remainingSlots?.some((remainingSlot: any) => {
-      console.log(remainingSlot.id);
       return remainingSlot.id === slot.id && remainingSlot.courtRemain > 0;
     });
 
-    return `flex-1 h-16 border border-gray-300 hover:bg-gray-300 hover:cursor-pointer ${
-      isSelected ? 'bg-slate-400' : ''
-    } ${isAvailable ? '' : 'bg-red-400'}`;
+    const thisSlotDay: Dayjs = currentWeekDays[slot.dateOfWeek];
+
+    thisSlotDay.set('hour', slot.startTime.slice(11, 13));
+    thisSlotDay.set('minute', slot.startTime.slice(14, 16));
+
+    const isPastSlot = thisSlotDay.isBefore(dayjs());
+
+    return `px-6 py-4 whitespace-nowrap text-sm text-gray-500 select-none flex items-center justify-center hover:bg-gray-300 ${
+      isSelected ? 'hover:bg-blue-500 bg-blue-400 text-white' : ''
+    } ${isAvailable ? '' : 'bg-red-400 pointer-events-none'} ${
+      isPastSlot ? 'bg-gray-500 pointer-events-none' : ''
+    }`;
   };
+
+  const getAllSortedSlotTimes = () => {
+    if (!transformedSlots || transformedSlots.length === 0) {
+      return [];
+    }
+
+    // Flatten the slots into a single array
+    const allSlots = transformedSlots.reduce((acc: any[], slotGroup: any) => {
+      return acc.concat(slotGroup.slots);
+    }, []);
+
+    if (allSlots.length === 0) {
+      return [];
+    }
+
+    // Extract the startTimes and sort them in ascending order
+    const sortedTimes = allSlots
+      .map((slot: any) => slot.startTime.slice(11, 16))
+      .sort((a: string, b: string) => a.localeCompare(b));
+
+    // Use a Set to remove duplicates
+    const uniqueSortedTimes = Array.from(new Set(sortedTimes));
+
+    return uniqueSortedTimes;
+  };
+
+  const sortedSlotTimes = getAllSortedSlotTimes();
 
   return (
     <div className='p-4'>
-      <div className='flex items-center justify-between mb-4'>
+      {/* Calendar header */}
+      <div className='flex items-center mb-4 justify-between space-x-2'>
+        {/* Navigation buttons */}
         <button
           onClick={handlePrevDay}
           className='p-2 bg-blue-500 text-white rounded'
         >
           &lt;
         </button>
-        <div>
-          <span className='text-lg font-semibold'>
-            {selectedWeek.format('dddd DD MMMM')}
-          </span>
-          <span className='ml-4 text-sm text-gray-500'>
-            week {selectedWeek.week()}
-          </span>
-        </div>
         <button
           onClick={handleNextDay}
           className='p-2 bg-blue-500 text-white rounded'
         >
           &gt;
         </button>
-      </div>
-
-      <div className='grid grid-cols-1'>
-        <div className='flex justify-center'>
-          {/* Header */}
-          <div className='w-[6%] text-center'>Sunday</div>
-          <div className='w-[6%] text-center'>Monday</div>
-          <div className='w-[6%] text-center'>Tuesday</div>
-          <div className='w-[6%] text-center'>Wednesday</div>
-          <div className='w-[6%] text-center'>Thursday</div>
-          <div className='w-[6%] text-center'>Friday</div>
-          <div className='w-[6%] text-center'>Saturday</div>
+        {/* Week and date information */}
+        <div className=''>
+          <span className='text-lg font-semibold'>
+            {selectedWeek.format('dddd DD MMMM')}
+          </span>
+          <span className='ml-2 text-sm text-gray-500'>
+            Week {selectedWeek.week()}
+          </span>
         </div>
-        <div className='flex justify-center'>
-          {currentWeekDays &&
-            transformedSlots &&
-            currentWeekDays.map((day: Dayjs, index: number) => (
-              <div key={index} className='w-[6%] text-center'>
-                <div>{day.format('DD/MM/YY')}</div>
-                {transformedSlots
-                  .filter(
-                    (slotGroup: any) => slotGroup.dateOfWeek === day.day()
-                  )
-                  .map((slot: any, index: number) => (
-                    <div key={index}>
-                      {remainingSlots?.length > 0 &&
-                        slot.slots.map((slot: any, index: number) => (
-                          <div
-                            key={index}
-                            className={getSlotClassNames(slot)}
-                            onClick={() => handleSelectSlot(slot.id)}
-                          >
-                            {slot.startTime.slice(11, 16)}
-                          </div>
-                        ))}
-                    </div>
-                  ))}
-              </div>
-            ))}
-        </div>
-      </div>
-
-      <div className='flex items-center mt-4 justify-center'>
-        <div className='flex items-center mr-4'>
-          <div className='w-4 h-4 bg-white border border-gray-400'></div>
-          <span className='ml-2'>Available</span>
-        </div>
-        <div className='flex items-center mr-4'>
-          <div className='w-4 h-4 bg-gray-400'></div>
-          <span className='ml-2'>Not available</span>
-        </div>
-        <div className='flex items-center mr-4'>
-          <div className='w-4 h-4 bg-red-400'></div>
-          <span className='ml-2'>Fully booked</span>
-        </div>
-        <div className='flex items-center mr-4'>
-          <div className='w-4 h-4 bg-green-400'></div>
-          <span className='ml-2'>Paid bookings</span>
-        </div>
-        <div className='flex items-center'>
-          <div className='w-4 h-4 bg-yellow-400'></div>
-          <span className='ml-2'>Unpaid bookings</span>
-        </div>
-      </div>
-      <div>
+        {/* Book slots button */}
+        <div className='flex-grow'></div>
         <button
           onClick={handleBookSlots}
           className='py-2 px-4 bg-blue-500 text-white rounded'
         >
           Book slots
         </button>
+      </div>
+
+      <div className='overflow-x-auto'>
+        <table className='min-w-full divide-y divide-gray-200 border-2 border-black'>
+          <thead>
+            <tr className='bg-gray-50'>
+              <th className='w-1/12 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                Time
+              </th>
+              {currentWeekDays &&
+                currentWeekDays.map((day: Dayjs, index: number) => (
+                  <th
+                    key={index}
+                    className='w-[10%] py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center'
+                  >
+                    {day.format('dddd') + ' '}
+                    {day.format('DD/MM')}
+                  </th>
+                ))}
+            </tr>
+          </thead>
+          <tbody className='bg-white divide-y divide-gray-200'>
+            {remainingSlots.length > 0 &&
+              transformedSlots &&
+              sortedSlotTimes &&
+              sortedSlotTimes.map((time, timeIndex) => (
+                <tr key={timeIndex}>
+                  <td className='px-0 py-0 whitespace-nowrap text-center text-sm text-gray-500'>
+                    {time}
+                  </td>
+                  {transformedSlots &&
+                    currentWeekDays &&
+                    currentWeekDays.map((day: Dayjs, dayIndex: number) => (
+                      <td
+                        key={dayIndex}
+                        className='px-0 py-0 whitespace-nowrap'
+                      >
+                        {transformedSlots &&
+                          transformedSlots
+                            .filter(
+                              (slotGroup: any) =>
+                                slotGroup.dateOfWeek === day.day()
+                            )
+                            .map((slotGroup: any) =>
+                              slotGroup.slots
+                                .filter(
+                                  (slot: any) =>
+                                    slot.startTime.slice(11, 16) === time
+                                )
+                                .map((slot: any, index: number) => (
+                                  <div
+                                    key={index}
+                                    className={getSlotClassNames(slot)}
+                                    onClick={() => handleSelectSlot(slot.id)}
+                                    style={{
+                                      marginBottom:
+                                        index === slotGroup.slots.length - 1
+                                          ? 0
+                                          : '-1px',
+                                    }}
+                                  >
+                                    {slot.startTime.slice(11, 16)}
+                                  </div>
+                                ))
+                            )}
+                      </td>
+                    ))}
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Legend */}
+      <div className='flex items-center mt-4 justify-center'>
+        <div className='flex items-center mr-4'>
+          <div className='w-4 h-4 bg-white border border-gray-400'></div>
+          <span className='ml-2'>Available</span>
+        </div>
+        <div className='flex items-center mr-4'>
+          <div className='w-4 h-4 bg-red-400'></div>
+          <span className='ml-2'>Not available</span>
+        </div>
+        <div className='flex items-center mr-4'>
+          <div className='w-4 h-4 bg-gray-500'></div>
+          <span className='ml-2'>Past</span>
+        </div>
       </div>
     </div>
   );

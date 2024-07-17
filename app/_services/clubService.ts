@@ -12,8 +12,6 @@ export const updateClub = (id: string, data: any) =>
 
 export const getClubRemainingCourt = (id: string, startDate: Dayjs) =>
   axiosGet(
-    `/clubs/id/${id}?startDate=${startDate.toISOString()}&endDate=${startDate
-      .add(7, 'day')
-      .toISOString()}`,
+    `/slots/slotInfo/${id}?startDate=${startDate.add(1, 'day').toISOString()}`,
     {}
   );
