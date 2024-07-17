@@ -1,6 +1,6 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 const Redirect = () => {
   const router = useRouter();

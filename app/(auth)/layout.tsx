@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import AuthBanner from '../_components/authBanner/AuthBanner';
 import '../globals.css';
+import { Suspense } from 'react';
 
 export default async function Authlayout({
   children,
@@ -12,7 +13,7 @@ export default async function Authlayout({
       <body>
         <div className='flex justify-between'>
           <AuthBanner />
-          {children}
+          <Suspense>{children}</Suspense>
         </div>
       </body>
     </html>
