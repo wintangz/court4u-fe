@@ -15,15 +15,18 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
   const [selectedWeek, setSelectedWeek] = useState(dayjs().startOf('week'));
   const [currentWeekDays, setCurrentWeekDays] = useState<any>();
   const [remainingSlots, setRemainingSlots] = useState<any>([]);
+  const [loading, setLoading] = useState(false);
 
   const [selectedSlots, setSelectedSlots] = useState<{ slotList: any[] }>({
     slotList: [],
   });
 
   useEffect(() => {
+    setLoading(true);
     const data = getClubRemainingCourt(clubId, selectedWeek);
     data.then((res: any) => {
       setRemainingSlots(res.data.metaData);
+      setLoading(false);
     });
   }, [selectedWeek]);
 
@@ -36,10 +39,12 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
   }, [selectedWeek, remainingSlots]);
 
   const handlePrevDay = () => {
+    setLoading(true);
     setSelectedWeek(selectedWeek.subtract(7, 'day'));
   };
 
   const handleNextDay = () => {
+    setLoading(true);
     setSelectedWeek(selectedWeek.add(7, 'day'));
   };
 
@@ -63,6 +68,8 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
   );
 
   const handleSelectSlot = (slotId: any) => {
+    if (loading) return;
+
     // Check if the slot is available
     const isAvailable = remainingSlots?.some((remainingSlot: any) => {
       return remainingSlot.id === slotId && remainingSlot.courtRemain > 0;
@@ -127,9 +134,15 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
     const isPastSlot = thisSlotDay.isBefore(dayjs());
 
     return `px-6 py-4 whitespace-nowrap text-sm text-gray-500 select-none flex items-center justify-center hover:bg-gray-300 ${
-      isSelected ? 'hover:bg-blue-500 bg-blue-400 text-white' : ''
-    } ${isAvailable ? '' : 'bg-red-400 pointer-events-none'} ${
-      isPastSlot ? 'bg-gray-500 pointer-events-none' : ''
+      loading
+        ? 'bg-gray-400 pointer-events-none'
+        : isPastSlot
+        ? 'bg-gray-500 pointer-events-none'
+        : isSelected
+        ? 'hover:bg-blue-500 bg-blue-400 text-white'
+        : isAvailable
+        ? ''
+        : 'bg-red-400 pointer-events-none'
     }`;
   };
 
@@ -247,7 +260,9 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
                                   <div
                                     key={index}
                                     className={getSlotClassNames(slot)}
-                                    onClick={() => handleSelectSlot(slot.id)}
+                                    onClick={() =>
+                                      !loading && handleSelectSlot(slot.id)
+                                    }
                                     style={{
                                       marginBottom:
                                         index === slotGroup.slots.length - 1
