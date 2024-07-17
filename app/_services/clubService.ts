@@ -36,6 +36,6 @@ export const getSlotsOfClub = () =>
   axiosGet(`/dashboard/owner/slot`, {
     headers: {
       Authorization: token,
-      'api-key': '7d530817-4d95-44e6-b3d4-018b1eeff2e3',
+      'api-key': apiKey as string,
     },
   });
