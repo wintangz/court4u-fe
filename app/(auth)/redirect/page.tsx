@@ -1,11 +1,22 @@
 'use client';
-import { useRouter } from 'next/navigation';
-import React from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { Suspense } from 'react';
 
 const Redirect = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  router.replace('http://localhost:3000/');
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(
+      'accessToken',
+      searchParams.get('accessToken') as string
+    );
+    localStorage.setItem(
+      'refreshToken',
+      searchParams.get('refreshToken') as string
+    );
+    router.replace('http://localhost:3000/');
+  }
 
   return <></>;
 };

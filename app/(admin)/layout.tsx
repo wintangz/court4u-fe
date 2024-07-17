@@ -1,16 +1,18 @@
 'use client';
-import { Inter } from 'next/font/google';
-import '../globals.css';
+import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
 import SideBar from '../_components/sidebar/SideBar';
 import TopBar from '../_components/sidebar/TopBar';
-import { usePathname } from 'next/navigation';
+import '../globals.css';
 
 const links: any = [
   { title: 'Dashboard', path: '/admin' },
   { title: 'Users', path: '/admin/users' },
   { title: 'Clubs', path: '/admin/clubs' },
+  { title: 'Courts', path: '/admin/courts' },
   { title: 'Subscriptions', path: '/admin/subscriptions' },
+  { title: 'Bills', path: '/admin/bills' },
+  { title: 'Bookings', path: '/admin/bookings' },
 ];
 
 function getTitle(pathname: string) {

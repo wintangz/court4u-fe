@@ -2,8 +2,9 @@ import React from 'react';
 import Link from 'next/link';
 import { GiDinosaurBones } from 'react-icons/gi';
 import { BsSearch } from 'react-icons/bs';
-import NavLinks from './NavLinks';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+const NavLinks = dynamic(() => import('./NavLinks'), { ssr: false });
 
 const NavBar: React.FC = () => {
   return (

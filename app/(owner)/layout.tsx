@@ -7,9 +7,9 @@ import '../globals.css';
 
 const links: any = [
   { title: 'Dashboard', path: '/admin' },
-  { title: 'Users', path: '/admin/users' },
-  { title: 'Clubs', path: '/admin/clubs' },
-  { title: 'Subscriptions', path: '/admin/subscriptions' },
+  { title: 'Clubs', path: '/owner/clubs' },
+  { title: 'Subscriptions', path: '/owner/subscriptions' },
+  { title: 'Bills', path: '/owner/bills' },
 ];
 
 export default function OwnerLayout({ children }: { children: ReactNode }) {

@@ -14,3 +14,6 @@ export const getClubs = () =>
 
 export const getBills = () =>
   axiosGet('/dashboard/admin/bill', { headers: { Authorization: token } });
+
+export const getBookings = () =>
+  axiosGet('/dashboard/admin/booking', { headers: { Authorization: token } });
