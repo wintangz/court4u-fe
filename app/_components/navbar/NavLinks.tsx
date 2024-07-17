@@ -1,11 +1,17 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { logout } from '@/app/_services/userService';
 
 const NavLinks = () => {
   const currentPath = usePathname();
+  const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    setAuthenticated(isAuthenticated());
+  }, []);
 
   const leftLinks = [
     { label: 'Home', href: '/' },
@@ -16,6 +22,18 @@ const NavLinks = () => {
     { label: 'Login', href: '/login' },
     { label: 'Register', href: '/register' },
   ];
+
+  const isAuthenticated = () => {
+    const token = localStorage.getItem('accessToken');
+    return token !== null; // corrected condition for checking token
+  };
+
+  const handleLogout = () => {
+    logout();
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    setAuthenticated(false); // Update state to rerender
+  };
 
   return (
     <div className='flex justify-between items-center w-[82%]'>
@@ -36,20 +54,31 @@ const NavLinks = () => {
         ))}
       </ul>
       <ul className='flex space-x-16 text-lg font-medium'>
-        {rightLinks.map((link) => (
-          <li key={link.href}>
-            <Link
-              href={link.href}
-              className={classNames({
-                'text-primary font-bold': link.href === currentPath,
-                'text-secondary': link.href !== currentPath,
-                'hover:text-primary transition-colors': true,
-              })}
+        {!authenticated ? (
+          rightLinks.map((link) => (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                className={classNames({
+                  'text-primary font-bold': link.href === currentPath,
+                  'text-secondary': link.href !== currentPath,
+                  'hover:text-primary transition-colors': true,
+                })}
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))
+        ) : (
+          <li>
+            <button
+              onClick={handleLogout}
+              className='text-secondary font-bold hover:text-primary transition-colors'
             >
-              {link.label}
-            </Link>
+              Log out
+            </button>
           </li>
-        ))}
+        )}
       </ul>
     </div>
   );

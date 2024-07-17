@@ -160,7 +160,7 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
                   )
                   .map((slot: any, index: number) => (
                     <div key={index}>
-                      {remainingSlots &&
+                      {remainingSlots?.length > 0 &&
                         slot.slots.map((slot: any, index: number) => (
                           <div
                             key={index}

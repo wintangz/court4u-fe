@@ -1,4 +1,5 @@
 'use client';
+import { logout } from '@/app/_services/userService';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -6,6 +7,12 @@ import { useEffect, useState } from 'react';
 
 const SideBar: React.FC<{ links: any }> = ({ links }) => {
   const pathname = usePathname();
+
+  const handleLogout = () => {
+    logout();
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+  };
 
   return (
     <ul className='fixed menu bg-base-200 w-[21vw] h-screen bg-gradient-to-b to-[#6bc945] from-[#22ad5c] gap-y-2 font-semibold text-base text-white'>
@@ -34,6 +41,11 @@ const SideBar: React.FC<{ links: any }> = ({ links }) => {
           </Link>
         </li>
       ))}
+      <li>
+        <Link href='/' onClick={() => handleLogout()}>
+          Log out
+        </Link>
+      </li>
     </ul>
   );
 };
