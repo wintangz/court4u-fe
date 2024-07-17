@@ -1,11 +1,34 @@
 'use client';
-import { getClub, updateClub } from '@/app/_services/clubService';
+import {
+  getClub,
+  getClubs,
+  getSlotsOfClub,
+  selectClub,
+  updateClub,
+} from '@/app/_services/clubService';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 const Update = () => {
   const params = useParams();
   const id = params.id;
+
+  const [clubs, setClubs] = useState<any>(null);
+  const [selectedClub, setSelectedClub] = useState<any>(null);
+  const [clubData, setClubData] = useState<any>(null);
+
+  useEffect(() => {
+    const res = getClubs();
+    res.then((res: any) => {
+      setClubs(res.data.metaData);
+    });
+  }, []);
+
+  const handleClubSelect = async (id: string) => {
+    const res = await selectClub(id);
+    setClubData(res.data);
+    setSelectedClub(id);
+  };
 
   const [club, setClub] = useState({
     name: '',
@@ -31,6 +54,32 @@ const Update = () => {
     }
   }, [id]);
 
+  useEffect(() => {
+    const fetchClub = async () => {
+      try {
+        const response = await selectClub(id as string);
+        console.log(response.data.metaData.apiKey);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('api-key', response.data.metaData.apiKey);
+        }
+      } catch (error) {
+        console.error('Error fetching club:', error);
+      }
+    };
+    if (id) {
+      fetchClub();
+    }
+    const fetchSlots = async () => {
+      try {
+        const response = await getSlotsOfClub();
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error fetching club:', error);
+      }
+    };
+    fetchSlots();
+  }, [id]);
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -52,7 +101,29 @@ const Update = () => {
 
   return (
     <div className='p-4'>
-      <h2 className='text-2xl mb-4'>Update Club</h2>
+      <div>
+        {/* {selectedClub && cl
+      ubData && ( */}
+        <div className='grid grid-cols-2 gap-4'>
+          <div className='border p-4'>
+            <h2 className='text-lg font-semibold'>Court</h2>
+            {/* <div>{clubData.court}</div> */}
+          </div>
+          <div className='border p-4'>
+            <h2 className='text-lg font-semibold'>Subscription</h2>
+            {/* <div>{clubData.subscription}</div> */}
+          </div>
+          <div className='border p-4'>
+            <h2 className='text-lg font-semibold'>Booking</h2>
+            {/* <div>{clubData.booking}</div> */}
+          </div>
+          <div className='border p-4'>
+            <h2 className='text-lg font-semibold'>Bill</h2>
+            {/* <div>{clubData.bill}</div> */}
+          </div>
+        </div>
+        {/* )} */}
+      </div>
       <form onSubmit={handleSubmit} className='space-y-4'>
         <div>
           <label className='block mb-1'>Name</label>

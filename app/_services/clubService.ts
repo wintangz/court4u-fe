@@ -1,6 +1,17 @@
 import { Dayjs } from 'dayjs';
 import { axiosGet, axiosPost } from './baseService';
 
+var token: string | null = '';
+var apiKey: string | null = 'est';
+
+if (typeof window !== 'undefined') {
+  token = localStorage?.getItem('accessToken');
+}
+
+if (typeof window !== 'undefined') {
+  apiKey = localStorage?.getItem('api-key');
+}
+
 export const getClubs = () => axiosGet('/clubs', {});
 
 export const getClub = (id: string) => axiosGet(`/clubs/${id}`, {});
@@ -15,3 +26,16 @@ export const getClubRemainingCourt = (id: string, startDate: Dayjs) =>
     `/slots/slotInfo/${id}?startDate=${startDate.add(1, 'day').toISOString()}`,
     {}
   );
+
+export const selectClub = (id: string) =>
+  axiosGet(`/dashboard/owner/club/select/${id}`, {
+    headers: { Authorization: token },
+  });
+
+export const getSlotsOfClub = () =>
+  axiosGet(`/dashboard/owner/slot`, {
+    headers: {
+      Authorization: token,
+      'api-key': '7d530817-4d95-44e6-b3d4-018b1eeff2e3',
+    },
+  });
