@@ -18,10 +18,12 @@ const NavLinks = () => {
     { label: 'Clubs', href: '/clubs' },
     { label: 'About', href: '/about' },
   ];
+  const leftOnlyPublicLinks = [{ label: 'Partner', href: '/partner' }];
   const rightLinks = [
     { label: 'Login', href: '/login' },
     { label: 'Register', href: '/register' },
   ];
+  const rightPrivateLinks = [{ label: 'Profile', href: '/profile' }];
 
   const isAuthenticated = () => {
     const token = localStorage.getItem('accessToken');
@@ -52,6 +54,22 @@ const NavLinks = () => {
             </Link>
           </li>
         ))}
+        {!authenticated
+          ? leftOnlyPublicLinks.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className={classNames({
+                    'text-primary font-bold': link.href === currentPath,
+                    'text-secondary': link.href !== currentPath,
+                    'hover:text-primary transition-colors': true,
+                  })}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))
+          : ''}
       </ul>
       <ul className='flex space-x-16 text-lg font-medium'>
         {!authenticated ? (
@@ -70,14 +88,17 @@ const NavLinks = () => {
             </li>
           ))
         ) : (
-          <li>
-            <button
-              onClick={handleLogout}
-              className='text-secondary font-bold hover:text-primary transition-colors'
-            >
-              Log out
-            </button>
-          </li>
+          <div>
+            <li>Welcome, </li>
+            <li>
+              <button
+                onClick={handleLogout}
+                className='text-secondary font-bold hover:text-primary transition-colors'
+              >
+                Log out
+              </button>
+            </li>
+          </div>
         )}
       </ul>
     </div>

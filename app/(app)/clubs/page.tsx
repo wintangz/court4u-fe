@@ -70,22 +70,10 @@ const Clubs = () => {
                   clubId={club.id}
                   clubName={club.name}
                   clubDescription={club.description}
-                  clubImage={club.clubImage}
+                  clubImage={club.logoUrl ? club.logoUrl : ''}
                 />
               );
             })}
-          <ClubCard
-            clubId=''
-            clubName='Messi'
-            clubDescription='Messi is GOAT'
-            clubImage='https://www.fifpro.org/media/fhmfhvkx/messi-world-cup.jpg?rxy=0.48356841796117644,0.31512414378031967&width=1600&height=1024&rnd=133210253587130000'
-          />
-          <ClubCard
-            clubId=''
-            clubName='Messi'
-            clubDescription='Messi is GOAT'
-            clubImage='https://www.fifpro.org/media/fhmfhvkx/messi-world-cup.jpg?rxy=0.48356841796117644,0.31512414378031967&width=1600&height=1024&rnd=133210253587130000'
-          />
         </div>
       </div>
     </div>
