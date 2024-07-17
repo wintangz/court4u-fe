@@ -39,7 +39,7 @@ const Courts = () => {
                     <div>{court.number}</div>
                   </td>
                   <td>
-                    <div>{court.club.name}</div>
+                    <div>{court.name}</div>
                   </td>
                   <td>
                     <div>
