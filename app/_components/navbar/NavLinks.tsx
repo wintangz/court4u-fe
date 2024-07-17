@@ -25,7 +25,7 @@ const NavLinks = () => {
 
   const isAuthenticated = () => {
     const token = localStorage.getItem('accessToken');
-    return token !== null; // corrected condition for checking token
+    return token !== null && token != undefined; // corrected condition for checking token
   };
 
   const handleLogout = () => {
