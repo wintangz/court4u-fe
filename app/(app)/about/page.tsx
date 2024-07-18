@@ -20,23 +20,32 @@ const About = () => {
           </ul>
         </nav>
       </header>
-      <main className="flex-grow p-8 bg-gray-100 relative">
-        <img src="https://badmintonw.com/uploads/images/san-cau-long-dai-hoc-su-pham-ha-noi.png" alt="San Cau Long" className="absolute inset-0 w-full h-full object-cover z-0" />
-        <section className="relative z-10 flex flex-col items-center justify-center min-h-screen">
-          <div className="relative z-20 p-6 bg-black bg-opacity-70 rounded text-center">
-            <h1 className="text-4xl font-bold mb-4 text-white">About Us</h1>
-            <p className="text-lg font-normal mb-1 text-white">
-              Welcome to Court4U! We are dedicated to providing the best court booking experience for our users.
-              Our mission is to simplify the process of finding and booking sports courts. Whether you're a casual player looking for a game, a club manager scheduling tournaments, or a coach arranging training sessions, our platform is designed to meet your needs.
-              Founded in 2024, we have quickly grown to become a trusted resource for sports enthusiasts everywhere.
+      <main className='flex-grow p-8 bg-gray-100 relative'>
+        <img
+          src='https://badmintonw.com/uploads/images/san-cau-long-dai-hoc-su-pham-ha-noi.png'
+          alt='San Cau Long'
+          className='absolute inset-0 w-full h-full object-cover z-0'
+        />
+        <section className='relative z-10 flex flex-col items-center justify-center min-h-screen'>
+          <div className='relative z-20 p-6 bg-black bg-opacity-70 rounded text-center'>
+            <h1 className='text-4xl font-bold mb-4 text-white'>About Us</h1>
+            <p className='text-lg font-normal mb-1 text-white'>
+              Welcome to Court4U! We are dedicated to providing the best court
+              booking experience for our users. Our mission is to simplify the
+              process of finding and booking sports courts. Whether you are a
+              casual player looking for a game, a club manager scheduling
+              tournaments, or a coach arranging training sessions, our platform
+              is designed to meet your needs. Founded in 2024, we have quickly
+              grown to become a trusted resource for sports enthusiasts
+              everywhere.
             </p>
           </div>
-          <div className="relative z-20 mt-8 w-full">
-            <div className="p-6 bg-red-700 rounded-lg w-full flex flex-col justify-center items-center relative">
-              <div className="text-4xl font-bold text-white text-center py-2">
+          <div className='relative z-20 mt-8 w-full'>
+            <div className='p-6 bg-red-700 rounded-lg w-full flex flex-col justify-center items-center relative'>
+              <div className='text-4xl font-bold text-white text-center py-2'>
                 Book Your Court Now
               </div>
-              <div className="relative flex items-center space-x-6 p-2 mt-2 bg-white shadow-lg rounded-lg">
+              <div className='relative flex items-center space-x-6 p-2 mt-2 bg-white shadow-lg rounded-lg'>
                 <Link
                   href='/login'
                   className='flex items-center space-x-6 text-lg text-black hover:bg-red-300  p-2 rounded'

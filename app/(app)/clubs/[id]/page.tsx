@@ -12,45 +12,22 @@ dayjs.extend(weekOfYear);
 const Club = () => {
   const { id } = useParams();
   const [club, setClub] = useState<any>(null);
+  const [subs, setSubs] = useState<any>(null);
   const [slots, setSlots] = useState(null);
 
   useEffect(() => {
     const fetchClubData = async () => {
       const result = await getClub(id as string);
-      setClub(result.data.metaData.club);
+      setClub(result.data.metaData);
       setSlots(result.data.metaData.slot);
+      setSubs(result.data.metaData.subscriptionOption);
     };
     fetchClubData();
   }, [id]);
 
-  // Sample subscription options data
-  const subscriptionOptions = [
-    {
-      id: '1',
-      name: 'Gold',
-      duration: 1,
-      type: 'year',
-      price: 500,
-    },
-    {
-      id: '2',
-      name: 'Silver',
-      duration: 6,
-      type: 'month',
-      price: 300,
-    },
-    {
-      id: '3',
-      name: 'Bronze',
-      duration: 3,
-      type: 'month',
-      price: 200,
-    },
-  ];
-
   return (
     <div className='mt-20'>
-      {club && slots && subscriptionOptions && (
+      {club && slots && subs && (
         <>
           {/* First Row: Club Name */}
           <div className='relative mb-4'>
@@ -103,7 +80,7 @@ const Club = () => {
               </div>
             </div>
             <div className='w-full lg:w-1/4 px-2'>
-              <SubscriptionOptions options={subscriptionOptions} />
+              <SubscriptionOptions options={subs} />
             </div>
           </div>
         </>

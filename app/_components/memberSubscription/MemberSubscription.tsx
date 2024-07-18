@@ -1,51 +1,40 @@
-'use client';
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
-interface SubscriptionOption {
-  id: string;
-  name: string;
-  duration: number;
-  type: string; // 'month' or 'year'
-  price: number;
-}
+const SubscriptionOptions = ({ options }: { options: any }) => {
+  const router = useRouter();
 
-interface SubscriptionOptionsProps {
-  options: SubscriptionOption[];
-}
+  const handleGetSubscription = (option: any) => {
+    const items = [
+      {
+        id: option.id,
+        name: option.name,
+        price: option.price,
+        detail: option.description,
+        type: 'Subscription',
+      },
+    ];
 
-const SubscriptionOptions: React.FC<SubscriptionOptionsProps> = ({
-  options,
-}) => {
-  const handlePurchase = (optionId: string) => {
-    // Handle purchase logic for the selected subscription option
-    console.log(`Purchase option with ID ${optionId}`);
-    // Add your purchase logic here
+    const itemsString = JSON.stringify(items);
+    router.push(`/payment?items=${encodeURIComponent(itemsString)}`);
   };
 
   return (
-    <div className='mt-4'>
-      <h2 className='text-lg font-semibold mb-2'>Member Subscriptions</h2>
-      <ul className='divide-y divide-gray-200'>
-        {options.map((option: SubscriptionOption, index: number) => (
-          <li key={index} className='py-2 flex items-center justify-between'>
-            <div>
-              <span className='font-semibold'>{option.name}</span>
-              <span className='ml-2 text-sm text-gray-500'>
-                {option.duration} {option.type}
-              </span>
-            </div>
-            <div className='flex items-center'>
-              <div className='text-gray-700'>${option.price.toFixed(2)}</div>
-              <button
-                onClick={() => handlePurchase(option.id)}
-                className='ml-4 bg-green-500 text-white px-4 py-1 rounded-md hover:bg-green-600 transition duration-200'
-              >
-                Get
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+    <div className='bg-white p-5 rounded-lg shadow-md'>
+      <h2 className='text-2xl font-semibold mb-4'>Subscription Options</h2>
+      {options.map((option: any) => (
+        <div key={option.id} className='mb-2 flex items-center space-x-2'>
+          <h3 className='text-md font-semibold'>{option.name}</h3>
+          <p className='text-gray-600'>{option.description}</p>
+          <p className='text-gray-600'>{option.price.toLocaleString()} VND</p>
+          <button
+            onClick={() => handleGetSubscription(option)}
+            className='bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600'
+          >
+            Get
+          </button>
+        </div>
+      ))}
     </div>
   );
 };

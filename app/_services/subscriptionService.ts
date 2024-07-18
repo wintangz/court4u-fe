@@ -10,3 +10,12 @@ export const getClubSubscriptions = () =>
   axiosGet('/dashboard/admin/subscriptionforclub', {
     headers: { Authorization: token },
   });
+
+export const buyMemberSubscription = (subId: string) =>
+  axiosPost(
+    '/memberSubscriptions/buy',
+    { subscriptionId: subId },
+    {
+      headers: { Authorization: token },
+    }
+  );

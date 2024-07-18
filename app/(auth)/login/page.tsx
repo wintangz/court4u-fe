@@ -4,9 +4,10 @@ import { login } from '@/app/_services/userService';
 import { jwtDecode } from 'jwt-decode';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { IoIosArrowBack } from 'react-icons/io';
 import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 type UserInfo = {
   email: string;
@@ -22,13 +23,39 @@ const Login = () => {
   });
 
   const handleLogin = async () => {
+    const loadingToastId = toast.loading('Logging in...', {
+      toastId: 'loginLoading',
+      autoClose: false,
+      closeOnClick: false,
+      hideProgressBar: true,
+      draggable: false,
+      position: 'bottom-right',
+      pauseOnHover: false,
+      progress: undefined,
+      theme: 'light',
+    });
+
     try {
       const res = await login({
         email: userInfo.email,
         password: userInfo.password,
       });
 
-      if (res.status == 200) {
+      toast.update(loadingToastId, {
+        render: 'Login successful!',
+        type: 'success',
+        isLoading: false,
+        autoClose: 2500,
+        position: 'bottom-right',
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+        theme: 'light',
+      });
+
+      if (res.status === 200) {
         // save token to local storage
         const accessToken = res.data.metaData.tokens.accessToken;
         const refreshToken = res.data.metaData.tokens.refreshToken;
@@ -46,22 +73,25 @@ const Login = () => {
           router.push('/admin');
         } else if (role.toUpperCase() === 'OWNER') {
           router.push('/owner/clubs');
+        } else {
+          router.push('/');
         }
       }
     } catch (error) {
-      if (!toast.isActive('loginError')) {
-        toast.error('Incorrect email or password!', {
-          toastId: 'loginError',
-          position: 'bottom-right',
-          autoClose: 2500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-          theme: 'light',
-        });
-      }
+      toast.update(loadingToastId, {
+        render: 'Incorrect email or password!',
+        type: 'error',
+        isLoading: false,
+        autoClose: 2500,
+        position: 'bottom-right',
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+        theme: 'light',
+      });
+      console.error('Login failed:', error);
     }
   };
 
@@ -99,8 +129,7 @@ const Login = () => {
               placeholder='Enter your email address'
               className='input input-bordered input-ghost w-full max-w-sm'
               onChange={(e) => {
-                userInfo.email = e.target.value;
-                setUserInfo(userInfo);
+                setUserInfo({ ...userInfo, email: e.target.value });
               }}
             />
           </label>
@@ -114,8 +143,7 @@ const Login = () => {
               placeholder='Enter your password'
               className='input input-bordered input-ghost w-full max-w-sm'
               onChange={(e) => {
-                userInfo.password = e.target.value;
-                setUserInfo(userInfo);
+                setUserInfo({ ...userInfo, password: e.target.value });
               }}
             />
           </label>
@@ -156,7 +184,7 @@ const Login = () => {
           >
             <img
               className='icon w-4'
-              alt='Google'
+              alt='Facebook'
               src='../assets/facebook.png'
             />
             Login with Facebook

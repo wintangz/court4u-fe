@@ -67,7 +67,7 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
     }, {})
   );
 
-  const handleSelectSlot = (slotId: any) => {
+  const handleSelectSlot = (slotId: any, date: Dayjs) => {
     if (loading) return;
 
     // Check if the slot is available
@@ -97,7 +97,7 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
         return {
           slotList: [
             ...prevSelectedSlots.slotList,
-            { slotId, date: dayjs().toISOString() },
+            { slotId, date: date.format('YYYY-MM-DD') },
           ],
         };
       }
@@ -106,12 +106,24 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
 
   const handleBookSlots = () => {
     if (checkRole('member')) {
-      const result = bookSlots(selectedSlots);
-
-      result.then((result: any) => {
-        const payUrl = result.data.metaData.payUrl;
-        window.location.href = payUrl;
+      // Transform selectedSlots into items
+      const items = selectedSlots.slotList.map((selectedSlot) => {
+        const slot = slots.find((slot: any) => slot.id === selectedSlot.slotId);
+        return {
+          id: selectedSlot.slotId,
+          date: `${selectedSlot.date}`,
+          name: `Court Booking - ${slot.startTime.slice(
+            11,
+            16
+          )} to ${slot.endTime.slice(11, 16)}`,
+          detail: `On ${selectedSlot.date}`,
+          type: 'Court Booking',
+          price: slot.price,
+        };
       });
+
+      const itemsString = JSON.stringify(items);
+      router.push(`/payment?items=${encodeURIComponent(itemsString)}`);
     } else {
       router.push('/login');
     }
@@ -262,7 +274,7 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
                                     key={index}
                                     className={getSlotClassNames(slot)}
                                     onClick={() =>
-                                      !loading && handleSelectSlot(slot.id)
+                                      !loading && handleSelectSlot(slot.id, day)
                                     }
                                     style={{
                                       marginBottom:

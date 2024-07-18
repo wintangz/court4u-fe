@@ -22,6 +22,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'www.fifpro.org',
       },
+      {
+        protocol: 'https',
+        hostname: 'img.freepik.com',
+      },
     ],
   },
 };
