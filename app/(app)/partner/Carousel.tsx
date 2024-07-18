@@ -36,25 +36,25 @@ const SubscriptionCarousel: React.FC = () => {
 
   const subscriptions = [
     {
-      title: 'Monthly Badminton Guide',
-      features: ['Basic Techniques', 'Rules of the Game', 'Training Tips'],
-      price: 10,
-      buttonText: 'Subscribe Now',
-      duration: 'month',
-    },
-    {
-      title: 'Weekly Fixed Schedule',
-      features: ['Advanced Techniques', 'Game Strategies', 'Fitness Tips'],
-      price: 25,
+      title: 'Weekly Club Operations Schedule',
+      features: ['Advanced Club Management', 'Financial Strategies', 'Marketing Tips'],
+      price: 50,
       buttonText: 'Subscribe Now',
       duration: 'week',
     },
     {
-      title: 'Flexible Schedule',
-      features: ['Professional Techniques', 'Match Analysis', 'Diet Plans'],
-      price: 50,
+      title: 'Flexible Club Management Plan',
+      features: ['Professional Club Management', 'Performance Analysis', 'Growth Strategies'],
+      price: 70,
       buttonText: 'Subscribe Now',
       duration: 'flexible',
+    },
+    {
+      title: 'Monthly Club Management Guide',
+      features: ['Club Administration', 'Member Engagement', 'Event Planning'],
+      price: 100,
+      buttonText: 'Subscribe Now',
+      duration: 'month',
     },
   ];
 
