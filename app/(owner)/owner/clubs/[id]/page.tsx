@@ -44,7 +44,7 @@ const Update = () => {
     const fetchClub = async () => {
       try {
         const response = await getClub(id as string);
-        setClub(response.data.metaData.club);
+        setClub(response.data.metaData);
       } catch (error) {
         console.error('Error fetching club:', error);
       }
