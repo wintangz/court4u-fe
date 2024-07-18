@@ -6,7 +6,6 @@ interface SubscriptionCardProps {
   title: string;
   features: string[];
   price: number;
-  buttonText: string;
   duration: string;
 }
 
@@ -14,7 +13,6 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   title,
   features,
   price,
-  buttonText,
   duration,
 }) => (
   <div className='p-4 bg-white rounded shadow-md flex flex-col items-center justify-center h-128'>
@@ -27,9 +25,6 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     <p className='text-2xl font-bold mb-4'>
       ${price} / {duration}
     </p>
-    <button className='bg-blue-500 text-white py-2 px-4 rounded'>
-      {buttonText}
-    </button>
   </div>
 );
 
@@ -44,8 +39,10 @@ const OwnerForm: React.FC = () => {
     cityOfProvince: '',
     description: '',
     preOrder: '',
-    subscriptionForClubId: '',
+    subscriptionForClubId: 'weekly',
   });
+
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -63,10 +60,23 @@ const OwnerForm: React.FC = () => {
     // You can add your form submission logic here
   };
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const prev = () =>
+    setCurrentIndex((curr) => {
+      const newIndex = curr === 0 ? subscriptions.length - 1 : curr - 1;
+      setFormData({ ...formData, subscriptionForClubId: subscriptions[newIndex].id });
+      return newIndex;
+    });
+
+  const next = () =>
+    setCurrentIndex((curr) => {
+      const newIndex = curr === subscriptions.length - 1 ? 0 : curr + 1;
+      setFormData({ ...formData, subscriptionForClubId: subscriptions[newIndex].id });
+      return newIndex;
+    });
 
   const subscriptions = [
     {
+      id: 'weekly',
       title: 'Weekly Club Operations Schedule',
       features: [
         'Advanced Club Management',
@@ -74,10 +84,10 @@ const OwnerForm: React.FC = () => {
         'Marketing Tips',
       ],
       price: 50,
-      buttonText: 'Subscribe Now',
       duration: 'week',
     },
     {
+      id: 'flexible',
       title: 'Flexible Club Management Plan',
       features: [
         'Professional Club Management',
@@ -85,73 +95,50 @@ const OwnerForm: React.FC = () => {
         'Growth Strategies',
       ],
       price: 70,
-      buttonText: 'Subscribe Now',
       duration: 'flexible',
     },
     {
+      id: 'monthly',
       title: 'Monthly Club Management Guide',
       features: ['Club Administration', 'Member Engagement', 'Event Planning'],
       price: 100,
-      buttonText: 'Subscribe Now',
       duration: 'month',
     },
   ];
 
-  const prev = () =>
-    setCurrentIndex((curr) =>
-      curr === 0 ? subscriptions.length - 1 : curr - 1
-    );
-
-  const next = () =>
-    setCurrentIndex((curr) =>
-      curr === subscriptions.length - 1 ? 0 : curr + 1
-    );
-
   return (
     <>
+      <div className='flex justify-center items-center my-10'>
+        <div className='carousel w-full max-w-2xl relative h-128'>
+          <div className='carousel-item relative w-full'>
+            <div className='overflow-hidden'>
+              <div
+                className='whitespace-nowrap transition-transform duration-500'
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+              >
+                {subscriptions.map((sub, index) => (
+                  <div key={index} className='inline-block w-full'>
+                    <SubscriptionCard {...sub} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className='absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between'>
+              <button type='button' onClick={prev} className='btn btn-circle'>
+                ❮
+              </button>
+              <button type='button' onClick={next} className='btn btn-circle'>
+                ❯
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <form
         onSubmit={handleSubmit}
         className='max-w-lg mx-auto p-4 bg-white rounded shadow-md'
       >
-        <div className='flex justify-center items-center my-10'>
-          <div className='carousel w-full max-w-2xl relative h-128'>
-            <div className='carousel-item relative w-full'>
-              <div className='overflow-hidden'>
-                <div
-                  className='whitespace-nowrap transition-transform duration-500'
-                  style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-                >
-                  {subscriptions.map((sub, index) => (
-                    <div key={index} className='inline-block w-full'>
-                      <SubscriptionCard {...sub} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className='absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between'>
-                <button onClick={prev} className='btn btn-circle'>
-                  ❮
-                </button>
-                <button onClick={next} className='btn btn-circle'>
-                  ❯
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <style jsx>{`
-          /* Hide the increment and decrement buttons */
-          input[type='number']::-webkit-outer-spin-button,
-          input[type='number']::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-          }
-
-          input[type='number'] {
-            -moz-appearance: textfield; /* Hide the buttons in Firefox */
-          }
-        `}</style>
-
         <div className='mb-4'>
           <label
             className='block text-gray-700 text-sm font-bold mb-2'
@@ -283,7 +270,7 @@ const OwnerForm: React.FC = () => {
             name='description'
             value={formData.description}
             onChange={handleChange}
-            placeholder='Enter Club Description'
+            placeholder='Enter a Description'
             className='shadow appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-900 leading-tight focus:outline-none focus:shadow-outline'
           />
         </div>
@@ -295,16 +282,21 @@ const OwnerForm: React.FC = () => {
             Pre-Order
           </label>
           <input
-            type='number'
+            type='text'
             id='preOrder'
             name='preOrder'
             value={formData.preOrder}
             onChange={handleChange}
-            placeholder='Enter Pre-Order %'
+            placeholder='Enter Pre-Order Details'
             className='shadow appearance-none border rounded w-full py-2 px-3 bg-gray-200 text-gray-900 leading-tight focus:outline-none focus:shadow-outline'
-            min='1' // This ensures the number is always greater than 0
           />
         </div>
+        <button
+          type='submit'
+          className='bg-green-500 text-white py-2 px-4 rounded'
+        >
+          Submit
+        </button>
       </form>
     </>
   );
