@@ -11,11 +11,12 @@ const Redirect = () => {
       'accessToken',
       searchParams.get('accessToken') as string
     );
+    console.log(searchParams.get('accessToken'));
     localStorage.setItem(
       'refreshToken',
       searchParams.get('refreshToken') as string
     );
-    router.replace('http://localhost:3000/');
+    router.replace(process.env.NEXT_PUBLIC_BASE_URL as string);
   }
 
   return <></>;

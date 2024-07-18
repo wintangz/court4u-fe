@@ -1,5 +1,5 @@
 'use client';
-import { getBills } from '@/app/_services/billService';
+import { getBillsOwner } from '@/app/_services/billService';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -8,7 +8,7 @@ const Bills = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await getBills();
+      const result = await getBillsOwner();
       const billsData = result.data.metaData;
 
       // Ensure date is properly parsed
@@ -52,14 +52,11 @@ const Bills = () => {
                   <td>{bill.type}</td>
                   <th>
                     <Link
-                      href={'/admin/bills/' + bill.id}
+                      href={'/owner/bills/' + bill.id}
                       className='btn btn-ghost btn-xs'
                     >
-                      update
+                      detail
                     </Link>
-                    <button className='btn btn-ghost btn-xs hover:bg-red-400'>
-                      delete
-                    </button>
                   </th>
                 </tr>
               ))}

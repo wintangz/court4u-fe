@@ -13,18 +13,23 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
   const router = useRouter();
 
   const [selectedWeek, setSelectedWeek] = useState(dayjs().startOf('week'));
-  const [currentWeekDays, setCurrentWeekDays] = useState<any>();
-  const [remainingSlots, setRemainingSlots] = useState<any>([]);
+  const [currentWeekDays, setCurrentWeekDays] = useState<Dayjs[]>([]);
+  const [remainingSlots, setRemainingSlots] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const [selectedSlots, setSelectedSlots] = useState<{ slotList: any[] }>({
     slotList: [],
   });
 
   useEffect(() => {
-    const data = getClubRemainingCourt(clubId, selectedWeek);
-    data.then((res: any) => {
-      setRemainingSlots(res.data.metaData);
-    });
+    const fetchRemainingSlots = async () => {
+      setLoading(true);
+      const data = await getClubRemainingCourt(clubId, selectedWeek);
+      setRemainingSlots(data.data.metaData);
+      setLoading(false);
+    };
+
+    fetchRemainingSlots();
   }, [selectedWeek]);
 
   useEffect(() => {
@@ -33,7 +38,7 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
       currentWeekDays.push(selectedWeek.add(i, 'day'));
     }
     setCurrentWeekDays(currentWeekDays);
-  }, [selectedWeek, remainingSlots]);
+  }, [selectedWeek]);
 
   const handlePrevDay = () => {
     setSelectedWeek(selectedWeek.subtract(7, 'day'));
@@ -63,6 +68,8 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
   );
 
   const handleSelectSlot = (slotId: any) => {
+    if (loading) return;
+
     // Check if the slot is available
     const isAvailable = remainingSlots?.some((remainingSlot: any) => {
       return remainingSlot.id === slotId && remainingSlot.courtRemain > 0;
@@ -126,10 +133,16 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
 
     const isPastSlot = thisSlotDay.isBefore(dayjs());
 
-    return `px-6 py-4 whitespace-nowrap text-sm text-gray-500 select-none flex items-center justify-center hover:bg-gray-300 ${
-      isSelected ? 'hover:bg-blue-500 bg-blue-400 text-white' : ''
-    } ${isAvailable ? '' : 'bg-red-400 pointer-events-none'} ${
-      isPastSlot ? 'bg-gray-500 pointer-events-none' : ''
+    return `px-6 py-4 whitespace-nowrap text-sm text-gray-500 select-none flex items-center justify-center ${
+      loading
+        ? 'bg-gray-400 pointer-events-none'
+        : isPastSlot
+        ? 'bg-gray-500 pointer-events-none'
+        : isSelected
+        ? 'hover:bg-blue-500 bg-blue-400 text-white'
+        : isAvailable
+        ? 'hover:bg-gray-300'
+        : 'bg-red-400 pointer-events-none'
     }`;
   };
 
@@ -165,18 +178,20 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
       {/* Calendar header */}
       <div className='flex items-center mb-4 justify-between space-x-2'>
         {/* Navigation buttons */}
-        <button
-          onClick={handlePrevDay}
-          className='p-2 bg-blue-500 text-white rounded'
-        >
-          &lt;
-        </button>
-        <button
-          onClick={handleNextDay}
-          className='p-2 bg-blue-500 text-white rounded'
-        >
-          &gt;
-        </button>
+        <div className='space-x-2'>
+          <button
+            onClick={handlePrevDay}
+            className='p-2 bg-blue-500 text-white rounded'
+          >
+            &lt;
+          </button>
+          <button
+            onClick={handleNextDay}
+            className='p-2 bg-blue-500 text-white rounded'
+          >
+            &gt;
+          </button>
+        </div>
         {/* Week and date information */}
         <div className=''>
           <span className='text-lg font-semibold'>
@@ -187,7 +202,6 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
           </span>
         </div>
         {/* Book slots button */}
-        <div className='flex-grow'></div>
         <button
           onClick={handleBookSlots}
           className='py-2 px-4 bg-blue-500 text-white rounded'
@@ -247,7 +261,9 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
                                   <div
                                     key={index}
                                     className={getSlotClassNames(slot)}
-                                    onClick={() => handleSelectSlot(slot.id)}
+                                    onClick={() =>
+                                      !loading && handleSelectSlot(slot.id)
+                                    }
                                     style={{
                                       marginBottom:
                                         index === slotGroup.slots.length - 1

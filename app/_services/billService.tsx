@@ -9,6 +9,9 @@ if (typeof window !== 'undefined') {
 export const getBills = () =>
   axiosGet('/dashboard/admin/bill', { headers: { Authorization: token } });
 
+export const getBillsOwner = () =>
+  axiosGet('/dashboard/owner/bills', { headers: { Authorization: token } });
+
 export const getBillDetail = (id: string) =>
   axiosGet(`/dashboard/admin/bill/${id}`, {
     headers: { Authorization: token },
