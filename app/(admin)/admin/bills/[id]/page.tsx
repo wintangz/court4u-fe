@@ -17,12 +17,23 @@ const BillDetail = () => {
     const fetchBillDetail = async () => {
       try {
         const response = await getBillDetail(id as string);
+        const data = response.data.metaData;
         setBillData(response.data.metaData);
-        console.log(response.data.metaData);
-        const result = await getClub(
-          response.data.metaData.booking.bookedSlot[0].slot.clubId
-        );
-        setClub(result.data.metaData);
+
+        let clubId = null;
+
+        if (data.type === 'booking') {
+          clubId = data.booking.bookedSlot[0].slot.clubId;
+        } else if (data.type === 'memberSubscription') {
+          clubId = data.memberSubscription.subscriptionOption[0].clubId;
+        } else if (data.type === 'ownerSubscription') {
+          clubId = data.clubSubscription.clubId;
+        }
+
+        if (clubId) {
+          const result = await getClub(clubId);
+          setClub(result.data.metaData);
+        }
       } catch (error) {
         console.error('Failed to fetch bill details:', error);
       } finally {
@@ -33,7 +44,6 @@ const BillDetail = () => {
     fetchBillDetail();
   }, [id]);
 
-  console.log(club);
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -42,10 +52,23 @@ const BillDetail = () => {
     return <div>Bill details not found.</div>;
   }
 
-  //   const companyName =
-  //     clubSubscription?.name || memberSubscription?.name || 'N/A';
-  //   const companyAddress =
-  //     clubSubscription?.address || memberSubscription?.address || 'N/A';
+  const customerName =
+    billData.booking?.user?.fullname ||
+    billData.memberSubscription?.user?.fullname ||
+    billData.clubSubscription?.user?.fullname ||
+    'N/A';
+
+  const customerEmail =
+    billData.booking?.user?.email ||
+    billData.memberSubscription?.user?.email ||
+    billData.clubSubscription?.club?.user?.email ||
+    'N/A';
+
+  const customerPhone =
+    billData.booking?.user?.phone ||
+    billData.memberSubscription?.user?.phone ||
+    billData.clubSubscription?.club?.user?.phone ||
+    'N/A';
 
   return (
     <div className='max-w-3xl mx-auto mt-10 p-8 border border-gray-300 bg-white shadow-lg'>
@@ -56,11 +79,11 @@ const BillDetail = () => {
       <div className='mb-8'>
         <div className='flex justify-between mb-2'>
           <span>Customer Name:</span>
-          <span>{billData.booking.user.fullname}</span>
+          <span>{customerName}</span>
         </div>
         <div className='flex justify-between mb-2'>
           <span>Customer Email:</span>
-          <span>{billData.booking.user.email}</span>
+          <span>{customerEmail}</span>
         </div>
         <div className='flex justify-between mb-2'>
           <span>Date:</span>
@@ -68,7 +91,7 @@ const BillDetail = () => {
         </div>
         <div className='flex justify-between mb-2'>
           <span>Phone No:</span>
-          <span>{billData.booking.user.phone}</span>
+          <span>{customerPhone}</span>
         </div>
         <div className='flex justify-between mb-2'>
           <span>Bill No:</span>
@@ -87,11 +110,15 @@ const BillDetail = () => {
         </thead>
         <tbody>
           <tr>
-            <td className='border border-gray-300 p-2'>{club.name}</td>
+            <td className='border border-gray-300 p-2'>
+              {club?.name || 'N/A'}
+            </td>
             <td className='border border-gray-300 p-2'>{billData.type}</td>
             <td className='border border-gray-300 p-2'>1</td>
             <td className='border border-gray-300 p-2'>{billData.method}</td>
-            <td className='border border-gray-300 p-2'>{billData.total}</td>
+            <td className='border border-gray-300 p-2'>
+              ${billData.total.toFixed(2)}
+            </td>
           </tr>
         </tbody>
       </table>

@@ -1,11 +1,6 @@
 'use client';
-import {
-  getClub,
-  getClubs,
-  getSlotsOfClub,
-  selectClub,
-  updateClub,
-} from '@/app/_services/clubService';
+import { getClub, getClubs, updateClub } from '@/app/_services/clubService';
+import { getSlotsOfClub, selectClub } from '@/app/_services/ownerService';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
