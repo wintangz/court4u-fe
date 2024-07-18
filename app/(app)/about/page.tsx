@@ -3,12 +3,20 @@ import React from 'react';
 
 const About = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="bg-gray-800 text-white p-4">
+    <div className='min-h-screen flex flex-col'>
+      <header className='bg-gray-800 text-white p-4'>
         <nav>
-          <ul className="flex justify-center space-x-4">
-            <li><a href="/" className="hover:underline">Home</a></li>
-            <li><a href="/about" className="hover:underline">About</a></li>
+          <ul className='flex justify-center space-x-4'>
+            <li>
+              <a href='/' className='hover:underline'>
+                Home
+              </a>
+            </li>
+            <li>
+              <a href='/about' className='hover:underline'>
+                About
+              </a>
+            </li>
           </ul>
         </nav>
       </header>
@@ -40,8 +48,8 @@ const About = () => {
           </div>
         </section>
       </main>
-      <footer className="bg-gray-800 text-white p-4 text-center">
-        <p>&copy; 2024 Our Platform. All rights reserved.</p>
+      <footer className='bg-gray-800 text-white p-4 text-center'>
+        <p>2024 Our Platform. All rights reserved.</p>
       </footer>
     </div>
   );
