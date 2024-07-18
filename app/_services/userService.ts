@@ -17,6 +17,13 @@ export const loginFacebook = (data: any) => axiosGet('/auth/facebook', data);
 
 export const loginGoogle = (data: any) => axiosGet('/auth/google', data);
 
+export const changePassword = (password: string) =>
+  axiosPost(
+    '/users/verify/changePassword',
+    { password: password },
+    { headers: { Authorization: token } }
+  );
+
 export const getUsers = () =>
   axiosGet('/users', { headers: { Authorization: token } });
 
