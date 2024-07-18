@@ -19,3 +19,8 @@ export const buyMemberSubscription = (subId: string) =>
       headers: { Authorization: token },
     }
   );
+
+export const getCurrentSubscription = (clubId: string) =>
+  axiosGet('/memberSubscriptions/find/' + clubId, {
+    headers: { Authorization: token },
+  });

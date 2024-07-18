@@ -6,6 +6,7 @@ import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { getClub } from '@/app/_services/clubService';
 import Calendar from '@/app/_components/calendar/Calendar';
 import SubscriptionOptions from '@/app/_components/memberSubscription/MemberSubscription';
+import { getCurrentSubscription } from '@/app/_services/subscriptionService';
 
 dayjs.extend(weekOfYear);
 
@@ -23,6 +24,16 @@ const Club = () => {
       setSubs(result.data.metaData.subscriptionOption);
     };
     fetchClubData();
+  }, [id]);
+
+  useEffect(() => {
+    if (
+      localStorage.getItem('accessToken') !== undefined &&
+      localStorage.getItem('accessToken') != null
+    ) {
+      const result = getCurrentSubscription(id as string);
+      console.log(result);
+    }
   }, [id]);
 
   return (

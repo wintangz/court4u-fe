@@ -5,14 +5,9 @@ import SideBar from '../_components/sidebar/SideBar';
 import TopBar from '../_components/sidebar/TopBar';
 import '../globals.css';
 
-const links: any = [
-  { title: 'Dashboard', path: '/owner' },
-  { title: 'Clubs', path: '/owner/clubs' },
-  { title: 'Subscriptions', path: '/owner/subscriptions' },
-  { title: 'Bills', path: '/owner/bills' },
-];
+const links: any = [{ title: 'Check In', path: '/staff/checkin' }];
 
-export default function OwnerLayout({ children }: { children: ReactNode }) {
+export default function StaffLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   const getTitle = (pathname: string) => {

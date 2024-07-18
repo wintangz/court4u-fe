@@ -8,6 +8,11 @@ if (typeof window !== 'undefined') {
 }
 export const getClubs = () => axiosGet('/clubs', {});
 
+export const getClubsOfOwner = () =>
+  axiosGet('/dashboard/owner/clubs', {
+    headers: { Authorization: token },
+  });
+
 export const getClub = (id: string) => axiosGet(`/clubs/${id}`, {});
 
 export const createClub = (data: any) => axiosPost('/clubs', data, '');

@@ -1,5 +1,5 @@
 'use client';
-import { getClubs } from '@/app/_services/clubService';
+import { getClubs, getClubsOfOwner } from '@/app/_services/clubService';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -7,7 +7,7 @@ const Clubs = () => {
   const [clubs, setClubs] = useState<any>(null);
 
   useEffect(() => {
-    const res = getClubs();
+    const res = getClubsOfOwner();
     res.then((res: any) => {
       setClubs(res.data.metaData);
     });
