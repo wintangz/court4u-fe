@@ -1,23 +1,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 import { getClub } from '@/app/_services/clubService'; // Replace with actual API calls
 import { useParams } from 'next/navigation';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 import { addSlot, deleteSlot } from '@/app/_services/slotService';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
-interface Slot {
-  slotId: string;
-  dateOfWeek: number;
-  startTime: string;
-  endTime: string;
-  price: number;
-}
 
 interface TimeSlot {
   time: string;
@@ -26,10 +12,10 @@ interface TimeSlot {
 
 const Slots = () => {
   const { id } = useParams();
-  const [slots, setSlots] = useState<Slot[]>([]);
+  const [slots, setSlots] = useState<any>([]);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [newSlot, setNewSlot] = useState<Partial<Slot>>({
+  const [newSlot, setNewSlot] = useState<Partial<any>>({
     startTime: '',
     endTime: '',
     price: 0,
@@ -39,8 +25,11 @@ const Slots = () => {
   const fetchSlots = async () => {
     try {
       const response = await getClub(id as string); // Replace with actual API call
-      const sortedSlots = response.data.metaData.slot.sort((a: Slot, b: Slot) =>
-        dayjs(a.startTime).isBefore(dayjs(b.startTime)) ? -1 : 1
+      const activeSlots = response.data.metaData.slot.filter(
+        (slot: any) => slot.status === 'active'
+      );
+      const sortedSlots = activeSlots.sort((a: any, b: any) =>
+        a.startTime.slice(11, 16).localeCompare(b.startTime.slice(11, 16))
       );
       setSlots(sortedSlots);
       generateTimeSlots(sortedSlots);
@@ -53,12 +42,11 @@ const Slots = () => {
     fetchSlots();
   }, [id]);
 
-  const generateTimeSlots = (slots: Slot[]) => {
+  const generateTimeSlots = (slots: any[]) => {
     const timeSlotMap: {
       [key: string]: { [key: number]: { slotId: string; display: string } };
     } = {};
     const uniqueTimes = new Set<string>();
-
     slots.forEach((slot) => {
       const startTime = slot.startTime.slice(11, 16);
       const endTime = slot.endTime.slice(11, 16);
@@ -71,15 +59,17 @@ const Slots = () => {
       }
 
       timeSlotMap[startTime][dayOfWeek] = {
-        slotId: slot.slotId,
+        slotId: slot.id,
         display: `${startTime} - ${endTime}`,
       };
     });
 
-    const timeSlotArray: TimeSlot[] = Array.from(uniqueTimes).map((time) => ({
-      time,
-      slots: timeSlotMap[time] || {},
-    }));
+    const timeSlotArray: TimeSlot[] = Array.from(uniqueTimes)
+      .map((time) => ({
+        time,
+        slots: timeSlotMap[time] || {},
+      }))
+      .sort((a, b) => a.time.localeCompare(b.time));
 
     setTimeSlots(timeSlotArray);
   };
@@ -92,23 +82,21 @@ const Slots = () => {
     const startTimeParts = newSlot.startTime!.split(':');
     const endTimeParts = newSlot.endTime!.split(':');
 
-    const date = dayjs().day(newSlot.dateOfWeek!).startOf('day');
-    const startTimeISO = date
-      .hour(parseInt(startTimeParts[0]) + 7)
-      .minute(parseInt(startTimeParts[1]))
-      .second(0)
-      .millisecond(0)
-      .toISOString();
-    const endTimeISO = date
-      .hour(parseInt(endTimeParts[0]) + 7)
-      .minute(parseInt(endTimeParts[1]))
-      .second(0)
-      .millisecond(0)
-      .toISOString();
+    const startTimeISO = new Date();
+    startTimeISO.setHours(parseInt(startTimeParts[0]) + 7);
+    startTimeISO.setMinutes(parseInt(startTimeParts[1]));
+    startTimeISO.setSeconds(0);
+    startTimeISO.setMilliseconds(0);
+
+    const endTimeISO = new Date();
+    endTimeISO.setHours(parseInt(endTimeParts[0]) + 7);
+    endTimeISO.setMinutes(parseInt(endTimeParts[1]));
+    endTimeISO.setSeconds(0);
+    endTimeISO.setMilliseconds(0);
 
     const newSlotWithId: any = {
-      startTime: startTimeISO,
-      endTime: endTimeISO,
+      startTime: startTimeISO.toISOString(),
+      endTime: endTimeISO.toISOString(),
       price: newSlot.price!,
       dateOfWeek: newSlot.dateOfWeek!,
     };
@@ -120,6 +108,7 @@ const Slots = () => {
   };
 
   const handleDeleteSlot = async (slotId: string) => {
+    console.log('Deleting slot:', slotId); // Debugging log
     // Make an API call to delete the slot
     await deleteSlot(slotId);
     fetchSlots();
