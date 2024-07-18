@@ -1,6 +1,6 @@
 import { Inter } from 'next/font/google';
 import '../globals.css';
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import NavBar from '../_components/navbar/NavBar';
 import Footer from '../_components/footer/Footer';
 
@@ -13,7 +13,9 @@ export default async function RootLayout({
     <html data-theme='court4u' lang='en'>
       <body>
         <NavBar />
-        <div className='min-h-screen'>{children}</div>
+        <div className='min-h-screen'>
+          <Suspense>{children}</Suspense>
+        </div>
         <Footer />
       </body>
     </html>
