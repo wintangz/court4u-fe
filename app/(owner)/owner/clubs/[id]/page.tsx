@@ -19,12 +19,6 @@ const Update = () => {
     });
   }, []);
 
-  const handleClubSelect = async (id: string) => {
-    const res = await selectClub(id);
-    setClubData(res.data);
-    setSelectedClub(id);
-  };
-
   const [club, setClub] = useState({
     name: '',
     address: '',

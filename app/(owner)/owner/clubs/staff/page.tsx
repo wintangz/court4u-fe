@@ -1,17 +1,23 @@
 'use client';
-import { getUsers } from '@/app/_services/userService';
+import { getStaffProfilesByClubId } from '@/app/_services/ownerService';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-const Users = () => {
-  const [users, setUsers] = useState<any>(null);
+const Staff = () => {
+  const [staffProfiles, setStaffProfiles] = useState<any[]>([]);
 
   useEffect(() => {
-    const data = getUsers();
+    const fetchData = async () => {
+      try {
+        const response = await getStaffProfilesByClubId();
+        setStaffProfiles(response.data.metaData);
+        console.log(response.data.metaData);
+      } catch (error) {
+        console.error('Failed to fetch staff profiles:', error);
+      }
+    };
 
-    data.then((result: any) => {
-      setUsers(result.data.metaData);
-    });
+    fetchData();
   }, []);
 
   return (
@@ -33,36 +39,40 @@ const Users = () => {
             </tr>
           </thead>
           <tbody>
-            {users &&
-              users.map((user: any, index: any) => (
-                <tr key={user.id}>
+            {staffProfiles.length > 0 ? (
+              staffProfiles.map((staff: any, index: any) => (
+                <tr key={staff.id}>
                   <th>{index + 1}</th>
                   <td>
                     <div className='flex items-center gap-3'>
                       <div className='avatar'>
                         <div className='mask mask-squircle h-12 w-12'>
                           <img
-                            src={user.avatarUrl}
-                            alt='Avatar Tailwind CSS Component'
+                            src={staff.user.avatarUrl || '/default-avatar.png'}
+                            alt='Staff Avatar'
                           />
                         </div>
                       </div>
                     </div>
                   </td>
                   <td>
-                    <div>{user.fullname}</div>
+                    <div>{staff.user.fullname}</div>
                   </td>
                   <td>
-                    <div>{user.dateOfBirth}</div>
+                    <div>
+                      {staff.user.dateOfBirth
+                        ? new Date(staff.user.dateOfBirth).toLocaleDateString()
+                        : 'N/A'}
+                    </div>
                   </td>
                   <td>
-                    <div>{user.sex}</div>
+                    <div>{staff.user.sex}</div>
                   </td>
                   <td>
-                    <div>{user.email}</div>
+                    <div>{staff.user.email}</div>
                   </td>
                   <td>
-                    <div>{user.phone}</div>
+                    <div>{staff.user.phone || 'N/A'}</div>
                   </td>
                   <td>
                     <div>
@@ -70,14 +80,15 @@ const Users = () => {
                         <input
                           type='checkbox'
                           className='checkbox checkbox-xs'
-                          checked={user.status}
+                          checked={staff.user.status === 'active'}
+                          readOnly
                         />
                       </label>
                     </div>
                   </td>
                   <th>
                     <Link
-                      href={'/admin/users/' + user.id}
+                      href={'/owner/clubs/staff/' + staff.userId}
                       className='btn btn-ghost btn-xs'
                     >
                       update
@@ -87,8 +98,14 @@ const Users = () => {
                     </button>
                   </th>
                 </tr>
-              ))}
-            {/* row 3 */}
+              ))
+            ) : (
+              <tr>
+                <td colSpan={9} className='text-center'>
+                  No staff profiles found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -96,4 +113,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Staff;

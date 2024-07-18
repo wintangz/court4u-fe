@@ -29,3 +29,6 @@ export const getUsers = () =>
 
 export const getUser = (id: string) =>
   axiosGet(`/users/${id}`, { headers: { Authorization: token } });
+
+export const updateUser = (data: any) =>
+  axiosGet(`/update`, { headers: { Authorization: token } }, data);
