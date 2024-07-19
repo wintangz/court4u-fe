@@ -72,7 +72,7 @@ const Login = () => {
         if (role.toUpperCase() === 'ADMIN') {
           router.push('/admin');
         } else if (role.toUpperCase() === 'OWNER') {
-          router.push('/owner/clubs');
+          router.push('/owner');
         } else if (role.toUpperCase() === 'STAFF') {
           router.push('/staff/checkin');
         } else {

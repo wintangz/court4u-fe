@@ -127,7 +127,12 @@ const Update = () => {
             {/* <div>{clubData.booking}</div> */}
           </div>
           <div className='border p-4'>
-            <h2 className='text-lg font-semibold'>Bills</h2>
+            <Link
+              href={'/owner/clubs/' + id + '/bills'}
+              className='text-lg font-semibold'
+            >
+              Bills
+            </Link>
             {/* <div>{clubData.bill}</div> */}
           </div>
         </div>

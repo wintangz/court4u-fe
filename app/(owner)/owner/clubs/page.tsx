@@ -1,5 +1,5 @@
 'use client';
-import { getClubs, getClubsOfOwner } from '@/app/_services/clubService';
+import { getClubsOfOwner } from '@/app/_services/clubService';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -16,6 +16,11 @@ const Clubs = () => {
   return (
     <div>
       <div className='overflow-x-auto w-full'>
+        <Link href='/owner/clubs/create'>
+          <button className='bg-green-500 text-white px-4 py-2 rounded'>
+            Create Clubs
+          </button>
+        </Link>
         <table className='table w-full'>
           {/* head */}
           <thead>

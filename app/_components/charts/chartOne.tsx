@@ -1,8 +1,9 @@
 'use client';
 
+import { getBookings, getMembers } from '@/app/_services/adminService';
 import { ApexOptions } from 'apexcharts';
 import dynamic from 'next/dynamic';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
@@ -85,10 +86,6 @@ const options: ApexOptions = {
   xaxis: {
     type: 'category',
     categories: [
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
       'Jan',
       'Feb',
       'Mar',
@@ -97,6 +94,10 @@ const options: ApexOptions = {
       'Jun',
       'Jul',
       'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ],
     axisBorder: {
       show: false,
@@ -116,24 +117,55 @@ const options: ApexOptions = {
   },
 };
 
-interface ChartOneState {
-  series: {
-    name: string;
-    data: number[];
-  }[];
+interface Member {
+  createdAt: string;
 }
 
+interface Booking {
+  createdAt: string;
+}
+
+const countByMonth = (
+  data: { createdAt: string }[],
+  dateField: keyof Member | keyof Booking
+): number[] => {
+  const counts = new Array(12).fill(0);
+  data.forEach((item) => {
+    const month = new Date(item[dateField]).getMonth();
+    counts[month]++;
+  });
+  return counts;
+};
+
 const ChartOne: React.FC = () => {
-  const series = [
-    {
-      name: 'Product One',
-      data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
-    },
-    {
-      name: 'Product Two',
-      data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
-    },
-  ];
+  const [series, setSeries] = useState<{ name: string; data: number[] }[]>([
+    { name: 'Members', data: [] },
+    { name: 'Bookings', data: [] },
+  ]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const membersResponse = await getMembers();
+        const bookingsResponse = await getBookings();
+
+        const membersData: Member[] = membersResponse.data.metaData;
+        const bookingsData: Booking[] = bookingsResponse.data.metaData;
+
+        const membersCount = countByMonth(membersData, 'createdAt');
+        const bookingsCount = countByMonth(bookingsData, 'createdAt');
+
+        setSeries([
+          { name: 'Members', data: membersCount },
+          { name: 'Bookings', data: bookingsCount },
+        ]);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className='col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8'>
@@ -144,8 +176,8 @@ const ChartOne: React.FC = () => {
               <span className='block h-2.5 w-full max-w-[0.625rem] rounded-full bg-primary'></span>
             </span>
             <div className='w-full'>
-              <p className='font-semibold text-primary'>Total Revenue</p>
-              <p className='text-sm font-medium'>12.04.2022 - 12.05.2022</p>
+              <p className='font-semibold'>Total Members</p>
+              <p className='text-sm font-medium text-primary'>Monthly count</p>
             </div>
           </div>
           <div className='flex min-w-[47.5%]'>
@@ -153,8 +185,8 @@ const ChartOne: React.FC = () => {
               <span className='block h-2.5 w-full max-w-[0.625rem] rounded-full bg-secondary'></span>
             </span>
             <div className='w-full'>
-              <p className='font-semibold text-secondary'>Total Sales</p>
-              <p className='text-sm font-medium'>12.04.2022 - 12.05.2022</p>
+              <p className='font-semibold'>Total Bookings</p>
+              <p className='text-sm font-medium text-primary'>Monthly count</p>
             </div>
           </div>
         </div>

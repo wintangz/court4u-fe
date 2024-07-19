@@ -1,10 +1,14 @@
 'use client';
 import { getStaffProfilesByClubId } from '@/app/_services/ownerService';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const Staff = () => {
   const [staffProfiles, setStaffProfiles] = useState<any[]>([]);
+
+  const params = useParams();
+  const id = params.id;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,6 +26,13 @@ const Staff = () => {
 
   return (
     <div>
+      <div className='flex justify-between items-center mb-4'>
+        <Link href={'/owner/clubs/' + id + '/staff/create'}>
+          <button className='bg-green-500 text-white px-4 py-2 rounded'>
+            Create Staff
+          </button>
+        </Link>
+      </div>
       <div className='overflow-x-auto w-full'>
         <table className='table w-full'>
           {/* head */}
@@ -88,7 +99,7 @@ const Staff = () => {
                   </td>
                   <th>
                     <Link
-                      href={'/owner/clubs/staff/' + staff.userId}
+                      href={'/owner/clubs/' + id + '/staff' + staff.userId}
                       className='btn btn-ghost btn-xs'
                     >
                       update

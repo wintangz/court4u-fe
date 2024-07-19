@@ -27,7 +27,10 @@ export const getBillsByClubId = () =>
   axiosGet('/dashboard/owner/bill/club', {
     headers: { Authorization: token, 'api-key': apiKey as string },
   });
-
+export const getBills = () =>
+  axiosGet('/dashboard/owner/bills', {
+    headers: { Authorization: token },
+  });
 // Booking services
 export const getBookingsByClubId = () =>
   axiosGet('/dashboard/owner/booking/club', {
