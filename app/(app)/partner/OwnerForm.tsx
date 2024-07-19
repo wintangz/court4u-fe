@@ -1,6 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import {
+  getClubSubscriptions,
+  buyClubSubscription,
+} from '@/app/_services/subscriptionService';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 
 interface SubscriptionCardProps {
   title: string;
@@ -39,10 +44,30 @@ const OwnerForm: React.FC = () => {
     cityOfProvince: '',
     description: '',
     preOrder: '',
-    subscriptionForClubId: 'weekly',
+    subscriptionForClubId: '',
   });
 
+  const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const fetchSubscriptions = async () => {
+      try {
+        const response = await getClubSubscriptions();
+        setSubscriptions(response.data.metaData);
+        setFormData({
+          ...formData,
+          subscriptionForClubId: response.data[0]?.id || '',
+        });
+      } catch (error) {
+        console.error('Failed to fetch subscriptions:', error);
+      }
+    };
+
+    fetchSubscriptions();
+  }, []);
+
+  console.log(subscriptions);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -54,57 +79,35 @@ const OwnerForm: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
-    // You can add your form submission logic here
+    try {
+      await buyClubSubscription(formData);
+      console.log('Subscription purchased successfully:', formData);
+    } catch (error) {
+      console.error('Failed to purchase subscription:', error);
+    }
   };
 
   const prev = () =>
     setCurrentIndex((curr) => {
       const newIndex = curr === 0 ? subscriptions.length - 1 : curr - 1;
-      setFormData({ ...formData, subscriptionForClubId: subscriptions[newIndex].id });
+      setFormData({
+        ...formData,
+        subscriptionForClubId: subscriptions[newIndex].id,
+      });
       return newIndex;
     });
 
   const next = () =>
     setCurrentIndex((curr) => {
       const newIndex = curr === subscriptions.length - 1 ? 0 : curr + 1;
-      setFormData({ ...formData, subscriptionForClubId: subscriptions[newIndex].id });
+      setFormData({
+        ...formData,
+        subscriptionForClubId: subscriptions[newIndex].id,
+      });
       return newIndex;
     });
-
-  const subscriptions = [
-    {
-      id: 'weekly',
-      title: 'Weekly Club Operations Schedule',
-      features: [
-        'Advanced Club Management',
-        'Financial Strategies',
-        'Marketing Tips',
-      ],
-      price: 50,
-      duration: 'week',
-    },
-    {
-      id: 'flexible',
-      title: 'Flexible Club Management Plan',
-      features: [
-        'Professional Club Management',
-        'Performance Analysis',
-        'Growth Strategies',
-      ],
-      price: 70,
-      duration: 'flexible',
-    },
-    {
-      id: 'monthly',
-      title: 'Monthly Club Management Guide',
-      features: ['Club Administration', 'Member Engagement', 'Event Planning'],
-      price: 100,
-      duration: 'month',
-    },
-  ];
 
   return (
     <>

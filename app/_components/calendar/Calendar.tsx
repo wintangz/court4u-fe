@@ -9,11 +9,13 @@ import { checkRole } from '@/app/_services/authService';
 
 dayjs.extend(weekOfYear);
 
-const Calendar: React.FC<{ clubId: any; slots: any; preOrder: any }> = ({
-  clubId,
-  slots,
-  preOrder,
-}) => {
+const Calendar: React.FC<{
+  clubId: any;
+  slots: any;
+  preOrder: any;
+  bookBy: any;
+  subId: any;
+}> = ({ clubId, slots, preOrder, bookBy, subId }) => {
   const router = useRouter();
 
   const [selectedWeek, setSelectedWeek] = useState(dayjs().startOf('week'));
@@ -52,8 +54,11 @@ const Calendar: React.FC<{ clubId: any; slots: any; preOrder: any }> = ({
     setSelectedWeek(selectedWeek.add(7, 'day'));
   };
 
+  // Filter slots to include only active ones
+  const activeSlots = slots.filter((slot: any) => slot.status === 'active');
+
   const transformedSlots = Object.values(
-    slots.reduce((acc: any, slot: any) => {
+    activeSlots.reduce((acc: any, slot: any) => {
       const { dateOfWeek, id, startTime, endTime, price } = slot;
       if (!acc[dateOfWeek]) {
         acc[dateOfWeek] = { dateOfWeek, slots: [] };
@@ -110,7 +115,6 @@ const Calendar: React.FC<{ clubId: any; slots: any; preOrder: any }> = ({
 
   const handleBookSlots = () => {
     if (checkRole('member')) {
-      // Transform selectedSlots into items
       const items = selectedSlots.slotList.map((selectedSlot) => {
         const slot = slots.find((slot: any) => slot.id === selectedSlot.slotId);
         return {
@@ -124,6 +128,8 @@ const Calendar: React.FC<{ clubId: any; slots: any; preOrder: any }> = ({
           type: 'Court Booking',
           price: slot.price,
           preOrder: preOrder,
+          bookBy: bookBy,
+          subId: subId,
         };
       });
 

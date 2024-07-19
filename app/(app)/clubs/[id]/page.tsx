@@ -38,7 +38,7 @@ const Club = () => {
       });
     }
   }, [id]);
-
+  console.log(curSub);
   return (
     <div className='mt-20'>
       {club && club.preOrder && slots && subs && (
@@ -78,7 +78,10 @@ const Club = () => {
               </div>
               <div className='text-gray-600'>
                 <h3 className='font-semibold'>Membership</h3>
-                <div className='text-blue-500'>Show membership status</div>
+                <div className='text-blue-500'>
+                  {curSub?.length > 0 ? curSub[0].timeRemain : '0'} hrs
+                  remaining
+                </div>
               </div>
             </div>
           </div>
@@ -95,6 +98,16 @@ const Club = () => {
                     clubId={id}
                     slots={slots}
                     preOrder={club.preOrder}
+                    bookBy={
+                      curSub?.length > 0 && curSub[0]?.timeRemain > 2
+                        ? 'Sub'
+                        : 'Pay'
+                    }
+                    subId={
+                      curSub?.length > 0 && curSub[0]?.timeRemain > 2
+                        ? curSub[0]?.id
+                        : ''
+                    }
                   />
                 )}
               </div>

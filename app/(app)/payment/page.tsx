@@ -1,5 +1,5 @@
 'use client';
-import { bookSlots } from '@/app/_services/bookService';
+import { bookSlots, bookSlotsBySub } from '@/app/_services/bookService';
 import { buyMemberSubscription } from '@/app/_services/subscriptionService';
 import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -60,27 +60,58 @@ const PaymentPage: React.FC = () => {
           console.error('Booking failed:', error);
         });
     } else {
-      const result = bookSlots(slots);
-      result
-        .then((result: any) => {
-          toast.update(loadingToastId, {
-            render: 'Booking successful!',
-            type: 'success',
-            isLoading: false,
-            autoClose: 5000,
+      if (parsedItems[0].bookBy == 'pay') {
+        const result = bookSlots(slots);
+        result
+          .then((result: any) => {
+            toast.update(loadingToastId, {
+              render: 'Booking successful!',
+              type: 'success',
+              isLoading: false,
+              autoClose: 5000,
+            });
+            const payUrl = result.data.metaData.payUrl;
+            window.location.href = payUrl;
+          })
+          .catch((error: any) => {
+            toast.update(loadingToastId, {
+              render: 'Booking failed!',
+              type: 'error',
+              isLoading: false,
+              autoClose: 5000,
+            });
+            console.error('Booking failed:', error);
           });
-          const payUrl = result.data.metaData.payUrl;
-          window.location.href = payUrl;
-        })
-        .catch((error: any) => {
-          toast.update(loadingToastId, {
-            render: 'Booking failed!',
-            type: 'error',
-            isLoading: false,
-            autoClose: 5000,
+      } else {
+        const transformedData = {
+          subscriptionId: parsedItems[0].subId,
+          slotList: slots.slotList.map((slot) => ({
+            date: slot.date,
+            slotId: slot.slotId,
+          })),
+        };
+        const result = bookSlotsBySub(transformedData);
+        result
+          .then((result: any) => {
+            toast.update(loadingToastId, {
+              render: 'Booking successful!',
+              type: 'success',
+              isLoading: false,
+              autoClose: 5000,
+            });
+            const payUrl = result.data.metaData.payUrl;
+            window.location.href = payUrl;
+          })
+          .catch((error: any) => {
+            toast.update(loadingToastId, {
+              render: 'Booking failed!',
+              type: 'error',
+              isLoading: false,
+              autoClose: 5000,
+            });
+            console.error('Booking failed:', error);
           });
-          console.error('Booking failed:', error);
-        });
+      }
     }
   };
 

@@ -10,3 +10,8 @@ export const bookSlots = (slots: any) =>
   axiosPost('/bookSlots/checkout', slots, {
     headers: { Authorization: token },
   });
+
+export const bookSlotsBySub = (slots: any) =>
+  axiosPost('/bookSlots/checkout', slots, {
+    headers: { Authorization: token },
+  });
