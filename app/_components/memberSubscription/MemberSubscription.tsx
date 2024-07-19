@@ -10,7 +10,7 @@ const SubscriptionOptions = ({ options }: { options: any }) => {
         id: option.id,
         name: option.name,
         price: option.price,
-        detail: option.description,
+        detail: option.totalDate + ' days',
         type: 'Subscription',
       },
     ];
@@ -25,7 +25,7 @@ const SubscriptionOptions = ({ options }: { options: any }) => {
       {options.map((option: any) => (
         <div key={option.id} className='mb-2 flex items-center space-x-2'>
           <h3 className='text-md font-semibold'>{option.name}</h3>
-          <p className='text-gray-600'>{option.description}</p>
+          <p className='text-gray-600'>{option.totalDate} days</p>
           <p className='text-gray-600'>{option.price.toLocaleString()} VND</p>
           <button
             onClick={() => handleGetSubscription(option)}

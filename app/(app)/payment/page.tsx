@@ -92,8 +92,9 @@ const PaymentPage: React.FC = () => {
   };
 
   const total = calculateTotal();
+  const preOrder = parsedItems[0]?.preOrder || 0; // Assuming preOrder is the same for all items
   const initialPayment =
-    parsedItems[0]?.type !== 'Subscription' ? total * 0.3 : total;
+    parsedItems[0]?.type !== 'Subscription' ? (total * preOrder) / 100 : total;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {

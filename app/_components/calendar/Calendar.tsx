@@ -9,7 +9,11 @@ import { checkRole } from '@/app/_services/authService';
 
 dayjs.extend(weekOfYear);
 
-const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
+const Calendar: React.FC<{ clubId: any; slots: any; preOrder: any }> = ({
+  clubId,
+  slots,
+  preOrder,
+}) => {
   const router = useRouter();
 
   const [selectedWeek, setSelectedWeek] = useState(dayjs().startOf('week'));
@@ -119,6 +123,7 @@ const Calendar: React.FC<{ clubId: any; slots: any }> = ({ clubId, slots }) => {
           detail: `On ${selectedSlot.date}`,
           type: 'Court Booking',
           price: slot.price,
+          preOrder: preOrder,
         };
       });
 

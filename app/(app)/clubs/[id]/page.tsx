@@ -35,14 +35,13 @@ const Club = () => {
       const result = getCurrentSubscription(id as string);
       result.then((result) => {
         setCurSub(result.data.metaData);
-        console.log(result);
       });
     }
   }, [id]);
 
   return (
     <div className='mt-20'>
-      {club && slots && subs && (
+      {club && club.preOrder && slots && subs && (
         <>
           {/* First Row: Club Name */}
           <div className='relative mb-4'>
@@ -91,7 +90,13 @@ const Club = () => {
           <div className='flex flex-col lg:flex-row px-4'>
             <div className='w-full lg:w-3/4 px-2 mb-4 lg:mb-0'>
               <div className='mb-4'>
-                <Calendar clubId={id} slots={slots} />
+                {club.preOrder !== undefined && (
+                  <Calendar
+                    clubId={id}
+                    slots={slots}
+                    preOrder={club.preOrder}
+                  />
+                )}
               </div>
             </div>
             <div className='w-full lg:w-1/4 px-2'>
