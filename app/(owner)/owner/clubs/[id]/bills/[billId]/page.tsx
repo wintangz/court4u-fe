@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 const BillDetail = () => {
   const params = useParams();
   const id = params.id;
+  const billId = params.billId;
 
   const [billData, setBillData] = useState<any>(null);
   const [club, setClub] = useState<any>(null);
@@ -16,7 +17,7 @@ const BillDetail = () => {
   useEffect(() => {
     const fetchBillDetail = async () => {
       try {
-        const response = await getBillDetail(id as string);
+        const response = await getBillDetail(billId as string);
         const data = response.data.metaData;
         setBillData(response.data.metaData);
 
