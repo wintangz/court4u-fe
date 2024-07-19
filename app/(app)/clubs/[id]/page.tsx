@@ -14,6 +14,7 @@ const Club = () => {
   const { id } = useParams();
   const [club, setClub] = useState<any>(null);
   const [subs, setSubs] = useState<any>(null);
+  const [curSub, setCurSub] = useState<any>(null);
   const [slots, setSlots] = useState(null);
 
   useEffect(() => {
@@ -32,7 +33,10 @@ const Club = () => {
       localStorage.getItem('accessToken') != null
     ) {
       const result = getCurrentSubscription(id as string);
-      console.log(result);
+      result.then((result) => {
+        setCurSub(result.data.metaData);
+        console.log(result);
+      });
     }
   }, [id]);
 

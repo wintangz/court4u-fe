@@ -30,7 +30,7 @@ const Profile = () => {
   const router = useRouter();
   // Load initial data from local storage
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -38,7 +38,7 @@ const Profile = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     console.log(e);
 
