@@ -23,11 +23,13 @@ const NavLinks = () => {
       localStorage.getItem('accessToken') !== undefined
     ) {
       if (typeof localStorage.getItem('accessToken') === 'string') {
-        const decodedToken: any = jwtDecode(
-          localStorage.getItem('accessToken') as string
-        );
-        console.log(decodedToken);
-        setUser(decodedToken.email.slice(0, decodedToken.email.indexOf('@')));
+        if (localStorage.getItem('accessToken') !== undefined) {
+          const decodedToken: any = jwtDecode(
+            localStorage.getItem('accessToken') as string
+          );
+          console.log(decodedToken);
+          setUser(decodedToken.email.slice(0, decodedToken.email.indexOf('@')));
+        }
       }
     }
   }, []);

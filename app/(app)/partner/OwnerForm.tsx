@@ -5,6 +5,7 @@ import {
   getClubSubscriptions,
   buyClubSubscription,
 } from '@/app/_services/subscriptionService';
+import { useRouter } from 'next/navigation';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 
 interface SubscriptionCardProps {
@@ -16,7 +17,7 @@ interface SubscriptionCardProps {
 
 const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   title,
-  features,
+  features = [], // Default to an empty array if features is undefined
   price,
   duration,
 }) => (
@@ -28,12 +29,14 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
       ))}
     </ul>
     <p className='text-2xl font-bold mb-4'>
-      ${price} / {duration}
+      {price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} /{' '}
+      {duration}
     </p>
   </div>
 );
 
 const OwnerForm: React.FC = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     fullname: '',
     email: '',
@@ -43,7 +46,7 @@ const OwnerForm: React.FC = () => {
     district: '',
     cityOfProvince: '',
     description: '',
-    preOrder: '',
+    preOrder: 0,
     subscriptionForClubId: '',
   });
 
@@ -54,10 +57,21 @@ const OwnerForm: React.FC = () => {
     const fetchSubscriptions = async () => {
       try {
         const response = await getClubSubscriptions();
-        setSubscriptions(response.data.metaData);
+        const subsData = response.data.metaData.map((sub: any) => ({
+          id: sub.id,
+          title: sub.name,
+          features: [
+            `Duration: ${sub.totalDate}`,
+            `Type: ${sub.type}`,
+            `Status: ${sub.status}`,
+          ],
+          price: sub.price,
+          duration: sub.type.toLowerCase(),
+        }));
+        setSubscriptions(subsData);
         setFormData({
           ...formData,
-          subscriptionForClubId: response.data[0]?.id || '',
+          subscriptionForClubId: subsData[0]?.id || '',
         });
       } catch (error) {
         console.error('Failed to fetch subscriptions:', error);
@@ -75,15 +89,19 @@ const OwnerForm: React.FC = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: name === 'preOrder' ? parseInt(value, 10) : value,
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await buyClubSubscription(formData);
+      const response = await buyClubSubscription(formData);
       console.log('Subscription purchased successfully:', formData);
+      const payUrl = response.data.metaData.payUrl;
+      if (payUrl) {
+        window.location.href = payUrl;
+      }
     } catch (error) {
       console.error('Failed to purchase subscription:', error);
     }
@@ -112,8 +130,8 @@ const OwnerForm: React.FC = () => {
   return (
     <>
       <div className='flex justify-center items-center my-10'>
-        <div className='carousel w-full max-w-2xl relative h-128'>
-          <div className='carousel-item relative w-full'>
+        <div className='carousel w-full max-w-2xl relative h-128 flex justify-center'>
+          <div className='carousel-item relative w-full justify-center'>
             <div className='overflow-hidden'>
               <div
                 className='whitespace-nowrap transition-transform duration-500'
@@ -285,7 +303,7 @@ const OwnerForm: React.FC = () => {
             Pre-Order
           </label>
           <input
-            type='text'
+            type='number'
             id='preOrder'
             name='preOrder'
             value={formData.preOrder}
