@@ -70,6 +70,12 @@ const BillDetail = () => {
     billData.clubSubscription?.club?.user?.phone ||
     'N/A';
 
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(value);
+
   return (
     <div className='max-w-3xl mx-auto mt-10 p-8 border border-gray-300 bg-white shadow-lg'>
       <div className='text-center mb-8'>
@@ -102,24 +108,33 @@ const BillDetail = () => {
         <thead>
           <tr>
             <th className='border border-gray-300 p-2'>Club</th>
-            <th className='border border-gray-300 p-2'>Particulars</th>
-            <th className='border border-gray-300 p-2'>Quantity</th>
+            <th className='border border-gray-300 p-2'>Slot</th>
+            <th className='border border-gray-300 p-2'>Date</th>
             <th className='border border-gray-300 p-2'>Pay Method</th>
             <th className='border border-gray-300 p-2'>Total</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td className='border border-gray-300 p-2'>
-              {club?.name || 'N/A'}
-            </td>
-            <td className='border border-gray-300 p-2'>{billData.type}</td>
-            <td className='border border-gray-300 p-2'>1</td>
-            <td className='border border-gray-300 p-2'>{billData.method}</td>
-            <td className='border border-gray-300 p-2'>
-              {billData.total.toFixed(2)}
-            </td>
-          </tr>
+          {billData.booking?.bookedSlot.map((slot: any) => (
+            <tr key={slot.id}>
+              <td className='border border-gray-300 p-2'>
+                {club?.name || 'N/A'}
+              </td>
+              <td className='border border-gray-300 p-2'>
+                {`${slot.slot.startTime.slice(
+                  11,
+                  16
+                )} - ${slot.slot.endTime.slice(11, 16)}`}
+              </td>
+              <td className='border border-gray-300 p-2'>
+                {new Date(slot.date).toLocaleDateString()}
+              </td>
+              <td className='border border-gray-300 p-2'>{billData.method}</td>
+              <td className='border border-gray-300 p-2'>
+                {formatCurrency(slot.price)}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
       <div className='flex justify-between mt-8'>

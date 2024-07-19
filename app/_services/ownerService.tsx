@@ -15,7 +15,11 @@ export const selectClub = (id: string) =>
   axiosGet(`/dashboard/owner/club/select/${id}`, {
     headers: { Authorization: token },
   });
-
+//court
+export const getCourts = () =>
+  axiosGet('/courts', {
+    headers: { Authorization: token, 'api-key': apiKey as string },
+  });
 // Club services
 export const getClubs = () =>
   axiosGet('/dashboard/owner/club', {
