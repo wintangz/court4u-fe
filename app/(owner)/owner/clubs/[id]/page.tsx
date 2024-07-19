@@ -96,7 +96,12 @@ const Update = () => {
       ubData && ( */}
         <div className='grid grid-cols-2 gap-4'>
           <div className='border p-4'>
-            <h2 className='text-lg font-semibold'>Courts</h2>
+            <Link
+              href={'/owner/clubs/' + id + '/courts'}
+              className='text-lg font-semibold'
+            >
+              Courts
+            </Link>
             {/* <div>{clubData.court}</div> */}
           </div>
           <div className='border p-4'>
