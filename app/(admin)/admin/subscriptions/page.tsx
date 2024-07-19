@@ -1,7 +1,7 @@
 'use client';
 import { getClubSubscriptions } from '@/app/_services/subscriptionService';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const Subscriptions = () => {
   const [subscriptions, setSubscriptions] = useState<any>(null);
@@ -17,6 +17,11 @@ const Subscriptions = () => {
   return (
     <div>
       <div className='overflow-x-auto w-full'>
+        <Link href={'/admin/subscriptions/create'}>
+          <button className='bg-green-500 text-white px-4 py-2 rounded'>
+            Create Subscription
+          </button>
+        </Link>
         <table className='table w-full'>
           {/* head */}
           <thead>
@@ -59,12 +64,6 @@ const Subscriptions = () => {
                     </div>
                   </td>
                   <th>
-                    <Link
-                      href={'/admin/subscriptions/' + sub.id}
-                      className='btn btn-ghost btn-xs'
-                    >
-                      update
-                    </Link>
                     <button className='btn btn-ghost btn-xs hover:bg-red-400'>
                       delete
                     </button>

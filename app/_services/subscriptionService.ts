@@ -23,6 +23,11 @@ export const buyMemberSubscription = (subId: string) =>
 export const buyClubSubscription = (data: any) =>
   axiosPost('/clubSubscriptions/buyFirstTime', data, {});
 
+export const addClubSubscription = (data: any) =>
+  axiosPost('/subscriptionForClubs/create', data, {
+    headers: { Authorization: token },
+  });
+
 export const getCurrentSubscription = (clubId: string) =>
   axiosGet('/memberSubscriptions/find/' + clubId, {
     headers: { Authorization: token },
