@@ -117,18 +117,14 @@ const BillDetail = () => {
             <td className='border border-gray-300 p-2'>1</td>
             <td className='border border-gray-300 p-2'>{billData.method}</td>
             <td className='border border-gray-300 p-2'>
-              ${billData.total.toFixed(2)}
+              {billData.total.toFixed(2)}
             </td>
           </tr>
         </tbody>
       </table>
-      <div className='mb-8'>
-        <p className='mb-2'>Additional Notes:</p>
-        <p className='border border-gray-300 p-2 h-24'></p>
-      </div>
       <div className='flex justify-between mt-8'>
-        <span>Company Name</span>
-        <span>Authorized Signatory</span>
+        <span>Court4U</span>
+        <span>Signatory</span>
       </div>
     </div>
   );
