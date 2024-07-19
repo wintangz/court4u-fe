@@ -25,7 +25,7 @@ const BillDetail = () => {
         if (data.type === 'booking') {
           clubId = data.booking.bookedSlot[0].slot.clubId;
         } else if (data.type === 'memberSubscription') {
-          clubId = data.memberSubscription.subscriptionOption[0].clubId;
+          clubId = data.memberSubscription.subscriptionOption.clubId;
         } else if (data.type === 'ownerSubscription') {
           clubId = data.clubSubscription.clubId;
         }
@@ -55,7 +55,7 @@ const BillDetail = () => {
   const customerName =
     billData.booking?.user?.fullname ||
     billData.memberSubscription?.user?.fullname ||
-    billData.clubSubscription?.user?.fullname ||
+    billData.clubSubscription?.club?.user?.fullname ||
     'N/A';
 
   const customerEmail =
@@ -108,33 +108,102 @@ const BillDetail = () => {
         <thead>
           <tr>
             <th className='border border-gray-300 p-2'>Club</th>
-            <th className='border border-gray-300 p-2'>Slot</th>
-            <th className='border border-gray-300 p-2'>Date</th>
-            <th className='border border-gray-300 p-2'>Pay Method</th>
+            <th className='border border-gray-300 p-2'>
+              {billData.type === 'booking'
+                ? 'Slot'
+                : billData.type === 'memberSubscription'
+                ? 'Subscription Option'
+                : 'Subscription'}
+            </th>
+            <th className='border border-gray-300 p-2'>
+              {billData.type === 'booking'
+                ? 'Date'
+                : billData.type === 'memberSubscription'
+                ? 'Start Date'
+                : 'Start Date'}
+            </th>
+            <th className='border border-gray-300 p-2'>
+              {billData.type === 'booking'
+                ? 'Pay Method'
+                : billData.type === 'memberSubscription'
+                ? 'End Date'
+                : 'End Date'}
+            </th>
             <th className='border border-gray-300 p-2'>Total</th>
           </tr>
         </thead>
         <tbody>
-          {billData.booking?.bookedSlot.map((slot: any) => (
-            <tr key={slot.id}>
+          {billData.type === 'booking' &&
+            billData.booking?.bookedSlot.map((slot: any) => (
+              <tr key={slot.id}>
+                <td className='border border-gray-300 p-2'>
+                  {club?.name || 'N/A'}
+                </td>
+                <td className='border border-gray-300 p-2'>
+                  {`${slot.slot.startTime.slice(
+                    11,
+                    16
+                  )} - ${slot.slot.endTime.slice(11, 16)}`}
+                </td>
+                <td className='border border-gray-300 p-2'>
+                  {new Date(slot.date).toLocaleDateString()}
+                </td>
+                <td className='border border-gray-300 p-2'>
+                  {billData.method}
+                </td>
+                <td className='border border-gray-300 p-2'>
+                  {formatCurrency(slot.price)}
+                </td>
+              </tr>
+            ))}
+          {billData.type === 'ownerSubscription' && (
+            <tr>
               <td className='border border-gray-300 p-2'>
                 {club?.name || 'N/A'}
               </td>
               <td className='border border-gray-300 p-2'>
-                {`${slot.slot.startTime.slice(
-                  11,
-                  16
-                )} - ${slot.slot.endTime.slice(11, 16)}`}
+                {billData.clubSubscription?.SubscriptionForClub?.name}
               </td>
               <td className='border border-gray-300 p-2'>
-                {new Date(slot.date).toLocaleDateString()}
+                {new Date(
+                  billData.clubSubscription?.startDate
+                ).toLocaleDateString()}
               </td>
-              <td className='border border-gray-300 p-2'>{billData.method}</td>
               <td className='border border-gray-300 p-2'>
-                {formatCurrency(slot.price)}
+                {new Date(
+                  billData.clubSubscription?.endDate
+                ).toLocaleDateString()}
+              </td>
+              <td className='border border-gray-300 p-2'>
+                {formatCurrency(billData.clubSubscription?.price)}
               </td>
             </tr>
-          ))}
+          )}
+          {billData.type === 'memberSubscription' && (
+            <tr>
+              <td className='border border-gray-300 p-2'>
+                {club?.name || 'N/A'}
+              </td>
+              <td className='border border-gray-300 p-2'>
+                {billData.memberSubscription?.subscriptionOption?.name}
+              </td>
+              <td className='border border-gray-300 p-2'>
+                {new Date(
+                  billData.memberSubscription?.startDate
+                ).toLocaleDateString()}
+              </td>
+              <td className='border border-gray-300 p-2'>
+                {new Date(
+                  billData.memberSubscription?.endDate
+                ).toLocaleDateString()}
+              </td>
+              <td className='border border-gray-300 p-2'>
+                {formatCurrency(
+                  billData.memberSubscription?.subscriptionOption?.price
+                )}
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
       <div className='flex justify-between mt-8'>
