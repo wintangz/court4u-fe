@@ -1,6 +1,7 @@
 'use client';
 import { getClub, getClubs, updateClub } from '@/app/_services/clubService';
 import { getSlotsOfClub, selectClub } from '@/app/_services/ownerService';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
@@ -95,19 +96,33 @@ const Update = () => {
       ubData && ( */}
         <div className='grid grid-cols-2 gap-4'>
           <div className='border p-4'>
-            <h2 className='text-lg font-semibold'>Court</h2>
+            <h2 className='text-lg font-semibold'>Courts</h2>
             {/* <div>{clubData.court}</div> */}
           </div>
           <div className='border p-4'>
-            <h2 className='text-lg font-semibold'>Subscription</h2>
+            <h2 className='text-lg font-semibold'>Subscriptions</h2>
             {/* <div>{clubData.subscription}</div> */}
           </div>
           <div className='border p-4'>
-            <h2 className='text-lg font-semibold'>Booking</h2>
+            <Link
+              href={'/owner/clubs/' + id + '/slots'}
+              className='text-lg font-semibold'
+            >
+              Slots
+            </Link>
             {/* <div>{clubData.booking}</div> */}
           </div>
           <div className='border p-4'>
-            <h2 className='text-lg font-semibold'>Bill</h2>
+            <Link
+              href={'/owner/clubs/' + id + '/staff'}
+              className='text-lg font-semibold'
+            >
+              Staffs
+            </Link>
+            {/* <div>{clubData.booking}</div> */}
+          </div>
+          <div className='border p-4'>
+            <h2 className='text-lg font-semibold'>Bills</h2>
             {/* <div>{clubData.bill}</div> */}
           </div>
         </div>

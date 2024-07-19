@@ -73,6 +73,8 @@ const Login = () => {
           router.push('/admin');
         } else if (role.toUpperCase() === 'OWNER') {
           router.push('/owner/clubs');
+        } else if (role.toUpperCase() === 'STAFF') {
+          router.push('/staff/checkin');
         } else {
           router.push('/');
         }

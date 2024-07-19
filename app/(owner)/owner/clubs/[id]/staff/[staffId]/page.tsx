@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 
 const UpdateStaff = () => {
   const params = useParams();
-  const id = params.id;
+  const id = params.staffId;
   const [staff, setStaff] = useState({
     fullname: '',
     email: '',

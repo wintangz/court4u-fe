@@ -74,9 +74,6 @@ const Clubs = () => {
                   </td>
                   <th>
                     <button className='btn btn-ghost btn-xs'>
-                      <Link href={`/owner/clubs/${club.id}`}>update</Link>
-                    </button>
-                    <button className='btn btn-ghost btn-xs'>
                       <Link href={`/owner/clubs/${club.id}`}>detail</Link>
                     </button>
                     <button className='btn btn-ghost btn-xs'>delete</button>
